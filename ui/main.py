@@ -276,7 +276,7 @@ class mainWindow(QMainWindow):
                 self.button_close.setHidden(True)
                 self.chkAction.setEnabled(True)
                 self.button_start.setText(self.tr("启动游戏"))
-                self.startAction.triggered.connect(self.buttonStart_onClick)
+                self.startAction.setEnabled(True)
                 self.startAction.setText(self.tr("启动游戏"))
                 if self.isHidden():
                     self.show_tray_menu()
