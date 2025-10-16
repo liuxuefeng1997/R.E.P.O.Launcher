@@ -267,9 +267,8 @@ class mainWindow(QMainWindow):
             self.button_close.setHidden(False)
             self.chkAction.setEnabled(False)
             self.button_start.setText(self.tr("游戏运行中..."))
-            self.startAction.triggered.connect(self.buttonClose_onClick)
-            self.startAction.setEnabled(True)
-            self.startAction.setText(self.tr("结束游戏"))
+            self.startAction.setEnabled(False)
+            self.startAction.setText(self.tr("游戏运行中..."))
         else:
             if self.run_once:
                 self.button_start.resize(280, 24)
