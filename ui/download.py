@@ -19,7 +19,7 @@ class DownloadWindow(QDialog):
         self.file_sum = 0
         self.file_key = ""
         # 窗口组件
-        self.setWindowTitle(self.tr("更新"))
+        self.setWindowTitle("更新")
         # self.setWindowModality(Qt.WindowModality.WindowModal)
         self.setModal(True)
         self.setWindowFlag(Qt.WindowType.WindowCloseButtonHint, False)
@@ -31,7 +31,7 @@ class DownloadWindow(QDialog):
         self.label.setGeometry(10, 5, 200, 30)
         self.label.setWordWrap(True)  # 启用自动换行
         self.label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-        self.label.setText(self.tr("正在准备更新..."))
+        self.label.setText("正在准备更新...")
         self.progressBarA = QProgressBar(self)
         self.progressBarA.setGeometry(10, 40, 200, 25)
         self.progressBarA.setMinimum(0)
@@ -69,7 +69,7 @@ class DownloadWindow(QDialog):
     def onModComplete(self, e, t, v):
         if e:
             self.versions = {}
-            self.label.setText(self.tr("下载完成"))
+            self.label.setText("下载完成")
         QTimer.singleShot(1000, lambda: self.close())
 
     def closeEvent(self, e):

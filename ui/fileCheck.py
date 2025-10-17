@@ -12,7 +12,7 @@ class fileCheckWindow(QDialog):
     def __init__(self, parent=None):
         super(fileCheckWindow, self).__init__(parent)
         # 窗口组件
-        self.setWindowTitle(self.tr("验证完整性"))
+        self.setWindowTitle("验证完整性")
         # self.setWindowModality(Qt.WindowModality.WindowModal)
         self.setModal(True)
         self.setWindowFlag(Qt.WindowType.WindowCloseButtonHint, False)
@@ -24,7 +24,7 @@ class fileCheckWindow(QDialog):
         self.label.setGeometry(10, 5, 200, 30)
         self.label.setWordWrap(True)  # 启用自动换行
         self.label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-        self.label.setText(self.tr("正在准备验证..."))
+        self.label.setText("正在准备验证...")
         self.progressBarA = QProgressBar(self)
         self.progressBarA.setGeometry(10, 40, 200, 25)
         self.progressBarA.setMinimum(0)
@@ -54,8 +54,8 @@ class fileCheckWindow(QDialog):
         file_name = data.get("file")
         complete = data.get("complete")
         find = data.get("find")
-        stat = '' if find else self.tr('：失败')
-        self.label.setText(f"{self.tr('正在验证')} {dir_name}{file_name}{stat}")
+        stat = '' if find else '：失败'
+        self.label.setText(f"{'正在验证'} {dir_name}{file_name}{stat}")
         self.progressBarA.setValue(complete)
 
     # {
@@ -72,9 +72,9 @@ class fileCheckWindow(QDialog):
     def onComplete(self, restore_list: list, dicts: dict):
         logging.debug(restore_list)
         if len(restore_list) > 0:
-            self.label.setText(self.tr("验证结束，其中 {} 个文件验证失败，准备重新获取").format(len(restore_list)))
+            self.label.setText(f"验证结束，其中 {len(restore_list)} 个文件验证失败，准备重新获取")
         else:
-            self.label.setText(self.tr("验证完成，文件没有问题"))
+            self.label.setText("验证完成，文件没有问题")
         # 延迟 1 秒执行发送事件，解决检查窗口未关闭，下载窗口就已经出现的问题
         QTimer.singleShot(1000, lambda: self.do_send_complete(restore_list, dicts))
 

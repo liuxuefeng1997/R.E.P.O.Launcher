@@ -27,7 +27,6 @@ class RepoLauncherApplication(QApplication):
 
 def init_ui():
     app = RepoLauncherApplication(sys.argv)
-    i18n(app)
 
     if app.is_running:
         sys.exit(1)

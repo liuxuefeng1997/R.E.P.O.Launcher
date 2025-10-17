@@ -42,10 +42,10 @@ class Clear(QThread):
     def run(self):
         try:
             del_key = []
-            self.sendProgress(self.tr("开始清理"))
+            self.sendProgress("开始清理")
             for key in self.versions.keys():
                 if key not in self.dicts.keys():
-                    self.sendProgress(f"{self.tr('清理')}：{key}")
+                    self.sendProgress(f"清理：{key}")
                     if os.path.exists(os.path.join(run_path, key)):
                         os.remove(os.path.join(run_path, key))
                     del_key.append(key)
@@ -54,7 +54,7 @@ class Clear(QThread):
                 writeJson(os.path.join(run_path, "version.json"), self.versions)
             r = self.remove_empty_folders(run_path)
             if r > 0:
-                self.sendProgress(self.tr("已删除 {} 个空文件夹").format(r))
+                self.sendProgress(f"已删除 {r} 个空文件夹")
             self.sendOk(True)
         except Exception as e:
             logging.error(e)
@@ -76,7 +76,7 @@ class Clear(QThread):
                 try:
                     os.rmdir(root)
                     del_dir = os.path.basename(root)
-                    self.sendProgress(f"{self.tr('已删除空文件夹')}: {del_dir}")
+                    self.sendProgress(f"已删除空文件夹: {del_dir}")
                     logging.info(f"已删除空文件夹: {root}")
                     removed_count += 1
                 except OSError as e:

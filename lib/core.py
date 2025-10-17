@@ -36,15 +36,6 @@ def init_log():
         )
 
 
-def i18n(parent):
-    # 创建翻译器并加载翻译文件
-    translator = QTranslator(parent)
-    locale = QLocale.system().name()  # 获取系统语言
-    translation_file = f"languages/{locale}.lang"
-    if translator.load(translation_file):
-        parent.installTranslator(translator)
-
-
 def network_check():
     try:
         requests.get("https://test.ipw.cn")
@@ -152,7 +143,7 @@ class checkUpdate(QThread):
                         channel = "release"
 
             if show_upTip:
-                self.sendLog(newVer, version.get(f"updateLog.{channel}", self.tr("无更新日志")), channel)
+                self.sendLog(newVer, version.get(f"updateLog.{channel}", "无更新日志"), channel)
             else:
                 logging.info(f"{newVer} 更新已跳过")
 

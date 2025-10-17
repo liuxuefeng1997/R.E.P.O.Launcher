@@ -130,7 +130,7 @@ class Aria2cDownload(QThread):
                     'last_progress': 0
                 }
                 logging.info(f"已添加下载任务: {key}, GID: {gid}")
-                self.send_add_status(f"{self.tr('添加更新队列')} {key}")
+                self.send_add_status(f"添加更新队列 {key}")
             else:
                 raise Exception("无法获取任务GID")
 
@@ -313,7 +313,7 @@ class Aria2cManager(QThread):
     def run(self):
         """主线程运行"""
         if not self.aria2c_path:
-            self.status_changed.emit(False, self.tr("未找到aria2c可执行文件"))
+            self.status_changed.emit(False, "未找到aria2c可执行文件")
             self.rpc_ready.emit(False)
             return
 
@@ -321,7 +321,7 @@ class Aria2cManager(QThread):
         if self.is_aria2c_running():
             logging.info("检测到已有aria2c进程在运行")
             if self.wait_for_rpc_ready():
-                self.status_changed.emit(True, self.tr("连接到现有aria2c RPC服务"))
+                self.status_changed.emit(True, "连接到现有aria2c RPC服务")
                 self.rpc_ready.emit(True)
                 return
             else:
@@ -329,16 +329,16 @@ class Aria2cManager(QThread):
 
         # 启动aria2c进程
         if self.start_aria2c():
-            self.status_changed.emit(True, self.tr("aria2c启动成功"))
+            self.status_changed.emit(True, "aria2c启动成功")
             # 等待RPC服务就绪
             if self.wait_for_rpc_ready():
                 self.rpc_ready.emit(True)
                 self.monitor_aria2c_process()
             else:
-                self.status_changed.emit(False, self.tr("aria2c RPC服务启动失败"))
+                self.status_changed.emit(False, "aria2c RPC服务启动失败")
                 self.rpc_ready.emit(False)
         else:
-            self.status_changed.emit(False, self.tr("aria2c启动失败"))
+            self.status_changed.emit(False, "aria2c启动失败")
             self.rpc_ready.emit(False)
 
     def start_aria2c(self):
@@ -482,7 +482,7 @@ class Aria2cManager(QThread):
                 if stderr:
                     logging.error(f"aria2c错误输出: {stderr}")
 
-                self.status_changed.emit(False, self.tr("aria2c进程已退出 (代码: {})").format(return_code))
+                self.status_changed.emit(False, f"aria2c进程已退出 (代码: {return_code})")
                 self.rpc_ready.emit(False)
                 break
 
@@ -519,7 +519,7 @@ class Aria2cManager(QThread):
 
             # 清理
             self.aria2c_process = None
-            self.status_changed.emit(False, self.tr("aria2c已停止"))
+            self.status_changed.emit(False, "aria2c已停止")
 
         except Exception as e:
             logging.error(f"停止aria2c时发生错误: {e}")
