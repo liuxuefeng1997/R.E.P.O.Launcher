@@ -152,7 +152,7 @@ class checkUpdate(QThread):
                         channel = "release"
 
             if show_upTip:
-                self.sendLog(newVer, version.get(f"updateLog.{channel}", "无更新日志"), channel)
+                self.sendLog(newVer, version.get(f"updateLog.{channel}", self.tr("无更新日志")), channel)
             else:
                 logging.info(f"{newVer} 更新已跳过")
 

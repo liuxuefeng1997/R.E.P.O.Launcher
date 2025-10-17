@@ -159,10 +159,10 @@ class mainWindow(QMainWindow):
                 )
                 logging.info("主图成功加载")
             else:
-                self.image_label.setText("R.E.P.O. 启动器")
+                self.image_label.setText(self.tr("R.E.P.O. 启动器"))
                 logging.error("错误：主图加载失败，对象为空")
         except Exception as e:
-            self.image_label.setText("R.E.P.O. 启动器")
+            self.image_label.setText(self.tr("R.E.P.O. 启动器"))
             logging.error(f"错误，主图加载失败: {str(e)}")
 
     # 切换更新通道
@@ -181,10 +181,10 @@ class mainWindow(QMainWindow):
     # 验证按钮按下，拉起验证窗口
     def buttonCheck_onClick(self):
         if not os.path.exists(os.path.join(run_path, f"{game_exe_name}.exe")):
-            QMessageBox.warning(self, "警告", "请确保启动器已在游戏目录中，且目录中包含游戏主程序", QMessageBox.StandardButton.Yes)
+            QMessageBox.warning(self, self.tr("警告"), self.tr("请确保启动器已在游戏目录中，且目录中包含游戏主程序"), QMessageBox.StandardButton.Yes)
             return
         if not network_check():
-            QMessageBox.warning(self, self.tr("验证完整性"), "网络错误，请检查网络设置", QMessageBox.StandardButton.Yes)
+            QMessageBox.warning(self, self.tr("验证完整性"), self.tr("网络错误，请检查网络设置"), QMessageBox.StandardButton.Yes)
             return
         logging.info("开始启动验证窗口")
         try:
@@ -226,8 +226,7 @@ class mainWindow(QMainWindow):
 
     # 验证清理结束
     def chkClrEnd(self, event):
-        QMessageBox.question(self, self.tr("验证"), "验证完成", QMessageBox.StandardButton.Yes)
-        self.statusBar.showMessage("完成", 3*1000)
+        self.statusBar.showMessage(self.tr("验证完整性完成"), 3*1000)
 
     # 检查更新按钮事件
     def buttonUpdate_onClick(self):
@@ -254,7 +253,7 @@ class mainWindow(QMainWindow):
     # aria2c 就绪
     def on_rpc_ready(self, is_ready):
         if is_ready:
-            self.statusBar.showMessage("下载引擎就绪", 3000)
+            self.statusBar.showMessage(self.tr("下载引擎就绪"), 3000)
             if self.button_close.isHidden():
                 self.button_start.setEnabled(True)
 
@@ -285,11 +284,11 @@ class mainWindow(QMainWindow):
     # 更新检查回调
     def updateLog(self, version, log, channel):
         gui = readJson(os.path.join(config_path, "gui.json"))
-        if channel == "beta":
-            buttons = QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Ignore
-        else:
+        if channel == "release":
             buttons = QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        box = QMessageBox.question(self, self.tr("更新"), f"发现新版本：{version}\n\n{log}\n\n要现在进行更新吗？", buttons)
+        else:
+            buttons = QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Ignore
+        box = QMessageBox.question(self, self.tr("更新"), f"{self.tr('发现新版本')}：{version}\n\n{log}\n\n{self.tr('要现在进行更新吗？')}", buttons)
         if box == QMessageBox.StandardButton.Yes:
             self.do_update(version)
         elif box == QMessageBox.StandardButton.Ignore:
@@ -306,24 +305,24 @@ class mainWindow(QMainWindow):
 
     # 本体更新开始回调
     def onUpdateStart(self, event):
-        self.statusBar.showMessage("开始下载更新")
+        self.statusBar.showMessage(self.tr("开始下载更新"))
 
     # 本体更新进度回调
     def onUpdate(self, progress: dict):
-        self.statusBar.showMessage(f"下载：{progress.get('complete'): .2f} %")
+        self.statusBar.showMessage(f"{self.tr('下载')}：{progress.get('complete'): .2f} %")
 
     # 本体更新完成回调
     def onUpdateComplete(self, e, t, k: str):
         if e:
-            self.statusBar.showMessage(f"更新文件下载完成，用时{t: .2f} 秒")
-            if QMessageBox.question(self, self.tr("更新"), "更新已下载，将自动重启完成更新", QMessageBox.StandardButton.Yes):
+            self.statusBar.showMessage(self.tr("更新文件下载完成，用时{} 秒").format(f"{t: .2f}"))
+            if QMessageBox.question(self, self.tr("更新"), self.tr("更新已下载，将自动重启完成更新"), QMessageBox.StandardButton.Yes):
                 try:
-                    self.statusBar.showMessage(f"解压更新文件")
+                    self.statusBar.showMessage(self.tr("开始解压更新"))
                     shutil.unpack_archive(os.path.join(run_path, f"{k}"), run_path, 'zip')
-                    self.statusBar.showMessage(f"解压更新完成")
+                    self.statusBar.showMessage(self.tr("解压更新完成"))
                 except Exception as e:
                     logging.error(e)
-                    QMessageBox.question(self, self.tr("更新"), "更新文件解压失败，请稍后重新检查更新尝试", QMessageBox.StandardButton.Yes)
+                    QMessageBox.question(self, self.tr("更新"), self.tr("更新文件解压失败，请稍后重新检查更新尝试"), QMessageBox.StandardButton.Yes)
                     return
             if os.path.exists(os.path.join(run_path, f"{k}")):
                 os.remove(os.path.join(run_path, f"{k}"))
@@ -340,7 +339,7 @@ class mainWindow(QMainWindow):
 
     # 重写关闭事件
     def closeEvent(self, event):
-        self.statusBar.showMessage("正在结束程序")
+        self.statusBar.showMessage(self.tr("正在结束程序"))
         self.cleanup_thread = CleanupThread(self)
         self.cleanup_thread.finished.connect(lambda: self.finalClose(event))
         self.cleanup_thread.start()
@@ -370,7 +369,7 @@ class mainWindow(QMainWindow):
     # 开始游戏按钮事件
     def buttonStart_onClick(self):
         if not os.path.exists(os.path.join(run_path, f"{game_exe_name}.exe")):
-            QMessageBox.warning(self, "警告", "请确保启动器已在游戏目录中，且目录中包含游戏主程序", QMessageBox.StandardButton.Yes)
+            QMessageBox.warning(self, self.tr("警告"), self.tr("请确保启动器已在游戏目录中，且目录中包含游戏主程序"), QMessageBox.StandardButton.Yes)
             return
         self.button_start.setEnabled(False)
         self.button_start.setText(self.tr("准备启动游戏..."))
@@ -379,7 +378,7 @@ class mainWindow(QMainWindow):
         net = network_check()
         logging.info(f"网络连接: {net}")
         if net:
-            self.statusBar.showMessage("正在准备更新")
+            self.statusBar.showMessage(self.tr("正在准备更新"))
             file_list = COS(TencentCloud.Update.mod_bukkit, TencentCloud.Update.mod_region).get_file_list()
             # dicts 改为本地变量以保持获取清单最新
             dicts = {}
@@ -387,7 +386,7 @@ class mainWindow(QMainWindow):
             for file_info in file_list:
                 if file_info["Key"][-1] != "/":
                     dicts[file_info["Key"]] = file_info["ETag"]
-            self.statusBar.showMessage("获取文件清单")
+            self.statusBar.showMessage(self.tr("获取文件清单"))
             # 读取本地缓存的文件校验值
             versions = readJson(os.path.join(run_path, "version.json"))
             # 生成更新 KeyList
@@ -396,7 +395,7 @@ class mainWindow(QMainWindow):
                 if dicts.get(key, "") != versions.get(key, ""):
                     self.statusBar.showMessage(key)
                     keyList.append(key)
-            self.statusBar.showMessage("正在准备下载", 3000)
+            self.statusBar.showMessage(self.tr("正在准备下载"), 3000)
             if len(keyList) > 0:
                 # 启动下载窗口
                 logging.info("开始启动下载窗口")
@@ -414,7 +413,7 @@ class mainWindow(QMainWindow):
                 self.downloadEnd(True, dicts=dicts)
                 return
         else:
-            QMessageBox.warning(self, self.tr("启动"), "网络错误，请检查网络设置", QMessageBox.StandardButton.Yes)
+            QMessageBox.warning(self, self.tr("启动"), self.tr("网络错误，请检查网络设置"), QMessageBox.StandardButton.Yes)
 
     # Mod 更新下载结束回调，由下载窗口拉起
     def downloadEnd(self, event, dicts):
@@ -426,7 +425,7 @@ class mainWindow(QMainWindow):
 
     # 更新结束清理完成回调
     def clearEnd(self, e):
-        self.statusBar.showMessage("更新清理完成，准备启动游戏", 3000)
+        self.statusBar.showMessage(self.tr("更新清理完成，准备启动游戏"), 3000)
         logging.debug(e)
         QTimer.singleShot(3000, lambda: self.startGame())
 

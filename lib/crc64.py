@@ -3,32 +3,6 @@ from lib.cos import *
 import crcmod
 
 
-# print(f"[{colored('校验文件', 'cyan')}] 开始检查文件")
-# r_list = []
-# if v_flag:
-#     for key in dicts.keys():
-#         file_sum += 1
-#         cos_crc64 = get_file_metadata("repo-1251534239", "ap-beijing", key).get("x-cos-hash-crc64ecma", False)
-#         if cos_crc64:
-#             file_crc64 = ""
-#             try:
-#                 file_crc64 = calculate_file_crc64(os.path.join(output_folder, key))
-#             except Exception as e:
-#                 if debug:
-#                     print("Error:", e)
-#             if f"{file_crc64}" != f"{cos_crc64}":
-#                 r_list.append(key)
-#             print(f'[{colored("校验文件", "cyan")}] {file_sum} / {file_maxsum} 已完成 {int(file_sum / file_maxsum * 100)}%')
-#     r_text = ""
-#     if r_list:
-#         r_text = f"，其中 {len(r_list)} 个文件校验失败，开始重新获取"
-#     print(f'[{colored("校验文件", "cyan" if r_list else "green")}] 共校验了 {file_maxsum} 个文件{r_text if r_list else "，文件没有问题"}')
-# else:
-#     print(f"[{colored('校验文件', 'green')}] 未进行过文件变更，已跳过校验（若需要验证文件，可在下次启动时加入参数 “-V” 或 “--verify” 强制进行校验）")
-# for key in r_list:
-#     download_progressbar(key, output_folder, "重新获取")
-#     f_flag = True
-#     f_sum += 1
 class CrcCheck(QThread):
     progress_all = pyqtSignal(dict)
     progress_one = pyqtSignal(dict)
