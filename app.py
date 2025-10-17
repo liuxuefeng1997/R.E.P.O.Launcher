@@ -27,10 +27,9 @@ class RepoLauncherApplication(QApplication):
 
 def init_ui():
     app = RepoLauncherApplication(sys.argv)
-
+    # 已有实例运行时直接退出新实例
     if app.is_running:
         sys.exit(1)
-
     w = mainWindow()
     w.show()
     sys.exit(app.exec())
