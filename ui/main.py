@@ -16,7 +16,6 @@ from ui.saveManager import SaveManagerWindow
 
 
 class mainWindow(QMainWindow):
-    run_once = False
 
     def __init__(self):
         super(mainWindow, self).__init__()
@@ -33,6 +32,7 @@ class mainWindow(QMainWindow):
         self.aria2c_manager = None
         self.chkUp = None
         self.cleanup_thread = None
+        self.run_once = False  # 首次运行 Flag
         # 初始化aria2c
         self.setup_aria2c()
         # 设置窗口标题和大小
@@ -389,6 +389,9 @@ class mainWindow(QMainWindow):
         if not os.path.exists(os.path.join(run_path, f"{game_exe_name}.exe")):
             QMessageBox.warning(self, "警告", "请确保启动器已在游戏目录中，且目录中包含游戏主程序", QMessageBox.StandardButton.Yes)
             return
+        # 兼容托盘启动，当主窗口隐藏时启动游戏，显示主窗口以输出启动进度
+        if self.isHidden():
+            self.show()
         self.button_start.setEnabled(False)
         self.button_start.setText("准备启动游戏...")
         self.startAction.setEnabled(False)
