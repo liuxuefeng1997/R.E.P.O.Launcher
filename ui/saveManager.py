@@ -16,6 +16,7 @@ class SaveManagerWindow(QDialog):
         self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, False)
         self.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
         self.resize(300, 200)
+        self.setFixedSize(self.width(), self.height())
         # 初始化列表
         self.listWidget = QListWidget(self)
         self.listWidget.setGeometry(0, 0, 100, 200)

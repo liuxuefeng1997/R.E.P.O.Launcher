@@ -20,6 +20,7 @@ class fileCheckWindow(QDialog):
         self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, False)
         self.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
         self.resize(220, 100)
+        self.setFixedSize(self.width(), self.height())
         self.label = QLabel(self)
         self.label.setGeometry(10, 5, 200, 30)
         self.label.setWordWrap(True)  # 启用自动换行
