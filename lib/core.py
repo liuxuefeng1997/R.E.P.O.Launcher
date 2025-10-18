@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import json
 import logging
@@ -13,8 +14,11 @@ from lib.path import *
 
 run_path = os.path.abspath('.')
 config_path = os.path.join(run_path, "config")
+backup_path = os.path.join(run_path, "backups")
 plugin_path = resource_path("plugins")
 source_path = resource_path("sources")
+localLow_path = os.path.expandvars(r"%localappdata%Low")
+game_save_path = os.path.join(localLow_path, r"semiwork\Repo\saves")
 aria2_path = os.path.join(plugin_path, "aria2c.exe")
 self_uuid = hashlib.md5(f"{game_name}{game_appId}{patch_type}{run_path}".encode("utf8")).hexdigest()
 
@@ -109,6 +113,35 @@ def remove_empty_folders(root_dir):
                 if not run_path:
                     logging.debug(e)
                 pass  # 忽略非空文件夹
+
+
+def generateFilenameWithDatetime(prefix="", suffix="", extension="", include_time=True):
+    """
+    生成包含当前日期时间的文件名
+
+    参数:
+        prefix (str): 文件名前缀
+        suffix (str): 文件名后缀
+        extension (str): 文件扩展名(不需要加点)
+        include_time (bool): 是否包含时间部分
+
+    返回:
+        str: 生成的完整文件名
+    """
+    # 获取当前日期时间
+    now = datetime.datetime.now()
+    # 格式化日期时间
+    if include_time:
+        datetime_str = now.strftime("%Y%m%d_%H%M%S")  # 格式: 20230805_143022
+    else:
+        datetime_str = now.strftime("%Y%m%d")  # 格式: 20230805
+    # 构建文件名
+    filename = f"{prefix}{datetime_str}{suffix}"
+    # 添加扩展名
+    if extension:
+        filename = f"{filename}.{extension.lstrip('.')}"
+
+    return filename
 
 
 class checkUpdate(QThread):

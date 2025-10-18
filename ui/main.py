@@ -12,6 +12,7 @@ from lib.game import CheckGame, Clear
 
 from ui.download import DownloadWindow
 from ui.fileCheck import fileCheckWindow
+from ui.saveManager import SaveManagerWindow
 
 
 class mainWindow(QMainWindow):
@@ -78,6 +79,11 @@ class mainWindow(QMainWindow):
         self.startAction.setText("启动游戏")
         self.startAction.triggered.connect(self.buttonStart_onClick)
         self.trayMenu.addAction(self.startAction)
+
+        self.saveAction = QAction(self)
+        self.saveAction.setText("存档管理器")
+        self.saveAction.triggered.connect(self.buttonSaveManager_onClick)
+        self.trayMenu.addAction(self.saveAction)
 
         self.trayMenu.addSeparator()
 
@@ -164,6 +170,18 @@ class mainWindow(QMainWindow):
         except Exception as e:
             self.image_label.setText("R.E.P.O. 启动器")
             logging.error(f"错误，主图加载失败: {str(e)}")
+
+    # 存档管理器按钮事件
+    def buttonSaveManager_onClick(self):
+        try:
+            logging.info("开始启动存档管理器窗口")
+            saveWin = SaveManagerWindow(parent=self)
+            saveWin.show()
+            saveWin.exec()
+        except Exception as e:
+            logging.error(f"打开存档管理器窗口失败: {e}")
+            import traceback
+            traceback.print_exc()
 
     # 切换更新通道
     def changeChannel(self, channel):
