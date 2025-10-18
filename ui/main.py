@@ -128,6 +128,7 @@ class mainWindow(QMainWindow):
 
         self.tray.setContextMenu(self.trayMenu)
         self.tray.activated.connect(self._tray)
+        self.tray.setToolTip("R.E.P.O.启动器\n双击：显示/隐藏")
         self.tray.show()
         # 游戏检测
         self.chkGame = CheckGame()
