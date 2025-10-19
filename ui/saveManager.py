@@ -59,7 +59,7 @@ class SaveManagerWindow(QDialog):
         player_name_list = "玩家："
         for player_id in player_list.keys():
             player_name_list += f'{player_list.get(player_id, "Err: None")}''; '
-        self.saveInfoLabel.setText(f"关卡：{level}\n赚取：{money}K\n{player_name_list}")
+        self.saveInfoLabel.setText(f"关卡：{level + 1}\n赚取：{money}K\n{player_name_list}")
 
     def loadList(self):
         self.listWidget.clear()
