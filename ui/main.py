@@ -387,6 +387,8 @@ class mainWindow(QMainWindow):
     # 开始游戏按钮事件
     # 托盘
     def trayStart_onClick(self):
+        self.button_start.setEnabled(False)
+        self.button_start.setText("准备启动游戏...")
         if self.isHidden():
             self.show()
         QTimer.singleShot(500, lambda: self.buttonStart_onClick())
@@ -394,6 +396,9 @@ class mainWindow(QMainWindow):
     # 主界面
     def buttonStart_onClick(self):
         if not os.path.exists(os.path.join(run_path, f"{game_exe_name}.exe")):
+            if not self.button_start.isEnabled():
+                self.button_start.setEnabled(True)
+                self.button_start.setText("启动游戏")
             QMessageBox.warning(self, "警告", "请确保启动器已在游戏目录中，且目录中包含游戏主程序", QMessageBox.StandardButton.Yes)
             return
         self.button_start.setEnabled(False)
