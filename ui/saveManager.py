@@ -129,7 +129,13 @@ class SaveManagerWindow(QDialog):
             logging.info(f"备份数据：{info}")
             save = info.get("save")
             filename = info.get("name")
-            shutil.unpack_archive(os.path.join(cache, f"{filename}.zip"), os.path.join(game_save_path, save), 'zip')
-            shutil.rmtree(cache)
-            self.loadList()
-            QMessageBox.information(self, "还原", "还原完成")
+            if info:
+                if os.path.exists(os.path.join(cache, f"{filename}.zip")):
+                    shutil.unpack_archive(os.path.join(cache, f"{filename}.zip"), os.path.join(game_save_path, save), 'zip')
+                    shutil.rmtree(cache)
+                    self.loadList()
+                    QMessageBox.information(self, "还原", "您选择的备份已还原完成")
+                else:
+                    QMessageBox.warning(self, "还原", "还原备份时出现问题：备份数据不存在")
+            else:
+                QMessageBox.warning(self, "还原", "还原备份时出现问题：不是有效的备份文件")
