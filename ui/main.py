@@ -77,7 +77,7 @@ class mainWindow(QMainWindow):
 
         self.startAction = QAction(self)
         self.startAction.setText("启动游戏")
-        self.startAction.triggered.connect(self.buttonStart_onClick)
+        self.startAction.triggered.connect(self.trayStart_onClick)
         self.trayMenu.addAction(self.startAction)
 
         self.saveAction = QAction(self)
@@ -385,13 +385,17 @@ class mainWindow(QMainWindow):
                 self.show_tray_menu()
 
     # 开始游戏按钮事件
+    # 托盘
+    def trayStart_onClick(self):
+        if self.isHidden():
+            self.show()
+        QTimer.singleShot(500, lambda: self.buttonStart_onClick())
+
+    # 主界面
     def buttonStart_onClick(self):
         if not os.path.exists(os.path.join(run_path, f"{game_exe_name}.exe")):
             QMessageBox.warning(self, "警告", "请确保启动器已在游戏目录中，且目录中包含游戏主程序", QMessageBox.StandardButton.Yes)
             return
-        # 兼容托盘启动，当主窗口隐藏时启动游戏，显示主窗口以输出启动进度
-        if self.isHidden():
-            self.show()
         self.button_start.setEnabled(False)
         self.button_start.setText("准备启动游戏...")
         self.startAction.setEnabled(False)
