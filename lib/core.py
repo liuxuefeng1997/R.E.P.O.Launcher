@@ -191,10 +191,9 @@ class CleanupThread(QThread):
 
     def run(self):
         try:
-            logging.info("主窗口关闭，后台执行清理")
-            self.parent.tray = None
+            logging.info("进行后台执行清理线程")
             self.parent.chkGame.stop_checking()
-            logging.info("程序退出，正在关闭aria2c...")
+            logging.info("正在关闭aria2c...")
             if self.parent.aria2c_manager:
                 self.parent.aria2c_manager.stop_aria2c()
             pid = checkRun("aria2c.exe")

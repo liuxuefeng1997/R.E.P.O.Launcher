@@ -358,6 +358,9 @@ class mainWindow(QMainWindow):
     # 重写关闭事件
     def closeEvent(self, event):
         self.statusBar.showMessage("正在结束程序")
+        logging.info("准备结束程序")
+        self.button_start.setEnabled(False)
+        self.tray = None
         self.cleanup_thread = CleanupThread(self)
         self.cleanup_thread.finished.connect(lambda: self.finalClose(event))
         self.cleanup_thread.start()
