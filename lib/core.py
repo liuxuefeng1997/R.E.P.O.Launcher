@@ -183,6 +183,8 @@ class checkUpdate(QThread):
             else:
                 logging.info(f"{newVer} 更新已跳过")
                 self.sendNoUpdate()
+        else:
+            self.sendNoUpdate()
 
     def sendLog(self, version: str, log: str, channel: str):
         self.newLog.emit(version, log, channel)
