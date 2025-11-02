@@ -397,7 +397,7 @@ class mainWindow(QMainWindow):
             self.show()
         QTimer.singleShot(500, lambda: self.gameStart())
 
-    # 启动游戏
+    # 启动游戏流程
     def gameStart(self):
         if not os.path.exists(os.path.join(run_path, f"{game_exe_name}.exe")):
             if not self.button_start.isEnabled():
