@@ -7,6 +7,7 @@ import winreg
 import psutil
 import requests as requests
 from PyQt6.QtCore import *
+from PyQt6.QtWidgets import QMessageBox
 
 from data.api_setting import TencentCloud
 from data.appInfo import ver, game_appId, game_name, patch_type
@@ -146,9 +147,11 @@ def generateFilenameWithDatetime(prefix="", suffix="", extension="", include_tim
 
 class checkUpdate(QThread):
     newLog = pyqtSignal(str, str, str)
+    noUpdate = pyqtSignal(bool)
 
-    def __init__(self):
+    def __init__(self, showTip=False):
         super(checkUpdate, self).__init__()
+        self.showTip = showTip
 
     def run(self):
         version: dict = getCOSConfJsonObject(TencentCloud.Update.self_update_manifest_url)
@@ -179,9 +182,13 @@ class checkUpdate(QThread):
                 self.sendLog(newVer, version.get(f"updateLog.{channel}", "无更新日志"), channel)
             else:
                 logging.info(f"{newVer} 更新已跳过")
+                self.sendNoUpdate()
 
     def sendLog(self, version: str, log: str, channel: str):
         self.newLog.emit(version, log, channel)
+
+    def sendNoUpdate(self):
+        self.noUpdate.emit(self.showTip)
 
 
 class CleanupThread(QThread):

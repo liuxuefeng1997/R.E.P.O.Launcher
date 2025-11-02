@@ -134,8 +134,6 @@ class mainWindow(QMainWindow):
         self.chkGame = CheckGame()
         self.chkGame.run_stat.connect(self.gameCheck)
         self.chkGame.start()
-        # 更新检查
-        self.buttonUpdate_onClick()
         # 初始化状态栏
         self.statusBar = QStatusBar(self)
         self.statusBar.setGeometry(0, 202, 300, 22)
@@ -249,10 +247,18 @@ class mainWindow(QMainWindow):
 
     # 检查更新按钮事件
     def buttonUpdate_onClick(self):
-        # 更新检查
-        self.chkUp = checkUpdate()
+        self.checkSelfUpdate(showTip=True)
+
+    # 检查更新
+    def checkSelfUpdate(self, showTip=False):
+        self.chkUp = checkUpdate(showTip=showTip)
         self.chkUp.newLog.connect(self.updateLog)
+        self.chkUp.noUpdate.connect(self.noUpdate)
         self.chkUp.start()
+
+    def noUpdate(self, show):
+        if show:
+            QMessageBox.information(self, "更新", '已是最新版本')
 
     # Aria2c 相关
     # 初始化 aria2c rpc
@@ -275,6 +281,9 @@ class mainWindow(QMainWindow):
             self.statusBar.showMessage("下载引擎就绪", 3000)
             if self.button_close.isHidden():
                 self.button_start.setEnabled(True)
+                self.startAction.setEnabled(True)
+            # 更新检查
+            self.checkSelfUpdate()
 
     # 游戏运行状态检查回调
     def gameCheck(self, run_stat: bool):
