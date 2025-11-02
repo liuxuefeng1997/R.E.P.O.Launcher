@@ -448,6 +448,8 @@ class mainWindow(QMainWindow):
             if not self.button_start.isEnabled():
                 self.button_start.setEnabled(True)
                 self.button_start.setText("启动游戏")
+                self.startAction.setEnabled(True)
+                self.startAction.setText("启动游戏")
             QMessageBox.warning(self, "启动", "网络错误，请检查网络设置", QMessageBox.StandardButton.Yes)
 
     # Mod 更新下载结束回调，由下载窗口拉起
