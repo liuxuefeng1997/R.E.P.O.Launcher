@@ -57,7 +57,7 @@ class mainWindow(QMainWindow):
         self.button_start = QPushButton(self)
         self.button_start.setGeometry(10, 176, 280, 24)
         self.button_start.setText("启动游戏")
-        self.button_start.clicked.connect(self.buttonStart_onClick)
+        self.button_start.clicked.connect(self.gameStart_onClick)
         self.button_start.setEnabled(False)
 
         self.button_close = QPushButton(self)
@@ -77,7 +77,7 @@ class mainWindow(QMainWindow):
 
         self.startAction = QAction(self)
         self.startAction.setText("启动游戏")
-        self.startAction.triggered.connect(self.trayStart_onClick)
+        self.startAction.triggered.connect(self.gameStart_onClick)
         self.trayMenu.addAction(self.startAction)
 
         self.saveAction = QAction(self)
@@ -388,26 +388,25 @@ class mainWindow(QMainWindow):
                 self.show_tray_menu()
 
     # 开始游戏按钮事件
-    # 托盘
-    def trayStart_onClick(self):
-        self.button_start.setEnabled(False)
-        self.button_start.setText("准备启动游戏...")
-        if self.isHidden():
-            self.show()
-        QTimer.singleShot(500, lambda: self.buttonStart_onClick())
-
-    # 主界面
-    def buttonStart_onClick(self):
-        if not os.path.exists(os.path.join(run_path, f"{game_exe_name}.exe")):
-            if not self.button_start.isEnabled():
-                self.button_start.setEnabled(True)
-                self.button_start.setText("启动游戏")
-            QMessageBox.warning(self, "警告", "请确保启动器已在游戏目录中，且目录中包含游戏主程序", QMessageBox.StandardButton.Yes)
-            return
+    def gameStart_onClick(self):
         self.button_start.setEnabled(False)
         self.button_start.setText("准备启动游戏...")
         self.startAction.setEnabled(False)
         self.startAction.setText("准备启动...")
+        if self.isHidden():
+            self.show()
+        QTimer.singleShot(500, lambda: self.gameStart())
+
+    # 启动游戏
+    def gameStart(self):
+        if not os.path.exists(os.path.join(run_path, f"{game_exe_name}.exe")):
+            if not self.button_start.isEnabled():
+                self.button_start.setEnabled(True)
+                self.button_start.setText("启动游戏")
+                self.startAction.setEnabled(True)
+                self.startAction.setText("启动游戏")
+            QMessageBox.warning(self, "警告", "请确保启动器已在游戏目录中，且目录中包含游戏主程序", QMessageBox.StandardButton.Yes)
+            return
         net = network_check()
         logging.info(f"网络连接: {net}")
         if net:
