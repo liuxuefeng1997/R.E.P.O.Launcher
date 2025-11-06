@@ -16,7 +16,7 @@ class CrcCheck(QThread):
         for file_info in self.file_list:
             if file_info["Key"][-1] != "/":
                 self.dicts[file_info["Key"]] = file_info["ETag"]
-        logging.info("校验列表初始化完成，开始校验")
+        logging.info("[校验文件] 校验列表初始化完成，开始校验")
 
     def run(self):
         file_sum = 0
@@ -114,7 +114,7 @@ class CrcCheck(QThread):
                 "complete": 0,
                 "find": False
             })
-            logging.error(f"读取文件失败: {e}")
+            logging.error(f"[校验文件] 读取文件失败: {e}")
             raise IOError(f"读取文件失败: {e}")
 
         return crc_value

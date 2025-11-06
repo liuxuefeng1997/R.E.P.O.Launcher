@@ -19,7 +19,7 @@ class mainWindow(QMainWindow):
 
     def __init__(self):
         super(mainWindow, self).__init__()
-        logging.info("初始化窗口中")
+        logging.info("[主窗口] 初始化窗口中")
         logging.info(run_path)
         # 初始化图片资源
         self.Icon = QIcon(os.path.join(source_path, "repo.ico"))
@@ -139,7 +139,7 @@ class mainWindow(QMainWindow):
         self.statusBar.setGeometry(0, 202, 300, 22)
         self.statusBar.setSizeGripEnabled(False)
         self.statusBar.showMessage("程序准备中")
-        logging.info("窗口初始化结束")
+        logging.info("[主窗口] 窗口初始化结束")
         # 加载配置
         gui = readJson(os.path.join(config_path, "gui.json"))
         curr_channel = gui.get("channel", "release")
@@ -162,23 +162,23 @@ class mainWindow(QMainWindow):
                         Qt.TransformationMode.SmoothTransformation
                     )
                 )
-                logging.info("主图成功加载")
+                logging.info("[主窗口] 主图成功加载")
             else:
                 self.image_label.setText("R.E.P.O. 启动器")
-                logging.error("错误：主图加载失败，对象为空")
+                logging.error("[主窗口] 错误：主图加载失败，对象为空")
         except Exception as e:
             self.image_label.setText("R.E.P.O. 启动器")
-            logging.error(f"错误，主图加载失败: {str(e)}")
+            logging.error(f"[主窗口] 错误，主图加载失败: {str(e)}")
 
     # 存档管理器按钮事件
     def buttonSaveManager_onClick(self):
         try:
-            logging.info("开始启动存档管理器窗口")
+            logging.info("[主窗口] 开始启动存档管理器窗口")
             saveWin = SaveManagerWindow(parent=self)
             saveWin.show()
             saveWin.exec()
         except Exception as e:
-            logging.error(f"打开存档管理器窗口失败: {e}")
+            logging.error(f"[主窗口] 打开存档管理器窗口失败: {e}")
             import traceback
             traceback.print_exc()
 
@@ -203,7 +203,7 @@ class mainWindow(QMainWindow):
         if not network_check():
             QMessageBox.warning(self, "验证完整性", "网络错误，请检查网络设置", QMessageBox.StandardButton.Yes)
             return
-        logging.info("开始启动验证窗口")
+        logging.info("[主窗口] 开始启动验证窗口")
         try:
             chkWin = fileCheckWindow(parent=self)
             # 返回验证状态 isOk: bool, restore_list: list, dicts: dict
@@ -211,7 +211,7 @@ class mainWindow(QMainWindow):
             chkWin.show()
             chkWin.exec()
         except Exception as e:
-            logging.error(f"打开验证窗口失败: {e}")
+            logging.error(f"[主窗口] 打开验证窗口失败: {e}")
             import traceback
             traceback.print_exc()
 
@@ -222,7 +222,7 @@ class mainWindow(QMainWindow):
             self.chkDownEnd(event=isOk, dicts=dicts)
         else:
             # 启动下载窗口
-            logging.info("开始重新下载")
+            logging.info("[主窗口] 开始重新下载")
             try:
                 # versions 改为函数内部获取
                 d = DownloadWindow(keyList=restore_list, dicts=dicts, parent=self)
@@ -230,7 +230,7 @@ class mainWindow(QMainWindow):
                 d.show()
                 d.exec()
             except Exception as e:
-                logging.error(f"打开下载窗口失败: {e}")
+                logging.error(f"[主窗口] 打开下载窗口失败: {e}")
                 import traceback
                 traceback.print_exc()
 
@@ -287,7 +287,7 @@ class mainWindow(QMainWindow):
 
     # 游戏运行状态检查回调
     def gameCheck(self, run_stat: bool):
-        logging.info(f"游戏运行状态：{run_stat}")
+        logging.info(f"[主窗口] 游戏运行状态：{run_stat}")
         if run_stat:
             self.button_start.resize(210, 24)
             self.button_start.setEnabled(False)
@@ -349,7 +349,7 @@ class mainWindow(QMainWindow):
                     shutil.unpack_archive(os.path.join(run_path, f"{k}"), run_path, 'zip')
                     self.statusBar.showMessage("解压更新完成")
                 except Exception as e:
-                    logging.error(e)
+                    logging.error(f"[主窗口] {e}")
                     QMessageBox.question(self, "更新", "更新文件解压失败，请稍后重新检查更新尝试", QMessageBox.StandardButton.Yes)
                     return
             if os.path.exists(os.path.join(run_path, f"{k}")):
@@ -367,7 +367,7 @@ class mainWindow(QMainWindow):
     # 重写关闭事件
     def closeEvent(self, event):
         self.statusBar.showMessage("正在结束程序")
-        logging.info("准备结束程序")
+        logging.info("[主窗口] 准备结束程序")
         self.button_start.setEnabled(False)
         self.tray = None
         self.cleanup_thread = CleanupThread(self)
@@ -376,7 +376,8 @@ class mainWindow(QMainWindow):
         event.ignore()
 
     def finalClose(self, event):
-        logging.debug(self.cleanup_thread.isRunning())
+        logging.info("[主窗口] 主窗口关闭")
+        logging.debug(f"[主窗口] 清理后台进程结果：{not self.cleanup_thread.isRunning()}")
         event.accept()
         sys.exit(0)
 
@@ -417,7 +418,7 @@ class mainWindow(QMainWindow):
             QMessageBox.warning(self, "警告", "请确保启动器已在游戏目录中，且目录中包含游戏主程序", QMessageBox.StandardButton.Yes)
             return
         net = network_check()
-        logging.info(f"网络连接: {net}")
+        logging.info(f"[主窗口] 网络连接: {net}")
         if net:
             self.statusBar.showMessage("正在准备更新")
             file_list = COS(TencentCloud.Update.mod_bukkit, TencentCloud.Update.mod_region).get_file_list()
@@ -439,14 +440,14 @@ class mainWindow(QMainWindow):
             self.statusBar.showMessage("正在准备下载", 3000)
             if len(keyList) > 0:
                 # 启动下载窗口
-                logging.info("开始启动下载窗口")
+                logging.info("[主窗口] 开始启动下载窗口")
                 try:
                     d = DownloadWindow(keyList=keyList, dicts=dicts, parent=self)
                     d.download_signal.connect(self.downloadEnd)
                     d.show()
                     d.exec()
                 except Exception as e:
-                    logging.error(f"打开下载窗口失败: {e}")
+                    logging.error(f"[主窗口] 打开下载窗口失败: {e}")
                     import traceback
                     traceback.print_exc()
             else:

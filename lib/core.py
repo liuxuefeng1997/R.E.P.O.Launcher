@@ -46,7 +46,7 @@ def network_check():
         requests.get("https://test.ipw.cn")
         chk = True
     except Exception as e:
-        logging.debug(e)
+        logging.debug(f"[Core] {e}")
         chk = False
     return chk
 
@@ -57,7 +57,7 @@ def readJson(path: str) -> dict:
             r = json.loads(f.read())
             f.close()
     except FileNotFoundError:
-        logging.debug(f"文件不存在 {path}")
+        logging.debug(f"[Core] 文件不存在 {path}")
         r = {}
     return r
 
@@ -69,7 +69,7 @@ def writeJson(path: str, json_object: dict) -> bool:
             f.close()
         r = True
     except Exception as e:
-        logging.debug(e)
+        logging.debug(f"[Core] {e}")
         r = False
     return r
 
@@ -90,7 +90,7 @@ def get_path_as_reg(steamAppID):
         winreg.CloseKey(key)
         return f'{data}'
     except FileNotFoundError as e:
-        print(f"\033[30m{e}\033[0m")
+        logging.debug(f"[Core] {e}")
         return None
 
 
@@ -98,7 +98,7 @@ def getCOSConfJsonObject(uri: str) -> dict:
     try:
         jsonObject = requests.get(uri).json()
     except Exception as s:
-        logging.error(s)
+        logging.error(f"[Core] {s}")
         jsonObject = {}
     return jsonObject
 
@@ -181,7 +181,7 @@ class checkUpdate(QThread):
             if show_upTip:
                 self.sendLog(newVer, version.get(f"updateLog.{channel}", "无更新日志"), channel)
             else:
-                logging.info(f"{newVer} 更新已跳过")
+                logging.info(f"[更新模块] {newVer} 更新已跳过")
                 self.sendNoUpdate()
         else:
             self.sendNoUpdate()
@@ -200,14 +200,14 @@ class CleanupThread(QThread):
 
     def run(self):
         try:
-            logging.info("进行后台执行清理线程")
+            logging.info("[Core] 进行后台执行清理线程")
             self.parent.chkGame.stop_checking()
-            logging.info("正在关闭aria2c...")
+            logging.info("[Core] 正在关闭aria2c...")
             if self.parent.aria2c_manager:
                 self.parent.aria2c_manager.stop_aria2c()
             pid = checkRun("aria2c.exe")
             if pid:
                 psutil.Process(pid).kill()
-            logging.info("程序已结束")
+            logging.info("[Core] 程序已结束")
         except Exception as e:
-            logging.error(e)
+            logging.error(f"[Core] {e}")

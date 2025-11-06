@@ -1,3 +1,5 @@
+import glob
+import re
 import shutil
 
 from PyQt6.QtWidgets import *
@@ -68,6 +70,7 @@ class SaveManagerWindow(QDialog):
             data = Es3Editer(os.path.join(game_save_path, rf"{save}\{save}.es3")).read_es3()
             save_name = data.get("teamName", {}).get("value", "R.E.P.O.")
             save_time = data.get("dateAndTime", {}).get("value", "1970-01-01")
+            logging.info(f"[备份还原模块] 已找到存档 {save_name} {save_time}")
             item = QListWidgetItem()
             item.setText(f"{save_name}\n{save_time}")
             item.setStatusTip(f'{save}')
@@ -98,7 +101,7 @@ class SaveManagerWindow(QDialog):
             directory=backup_path,
             filter="备份文件 (*.save.zip)"
         )
-        logging.info(f"选择备份文件位置：{file_path}")
+        logging.info(f"[备份还原模块] 选择备份文件位置：{file_path}")
         if file_path:
             cache = os.path.join(run_path, "backup_cache")
             cache_filename = generateFilenameWithDatetime(prefix="backup_")
@@ -108,6 +111,7 @@ class SaveManagerWindow(QDialog):
                 "save": current_save,
                 "name": cache_filename
             })
+            auto_delete_backup_files_dynamic(os.path.join(game_save_path, current_save))
             shutil.make_archive(os.path.join(cache, cache_filename), 'zip', os.path.join(game_save_path, current_save))
             shutil.make_archive(file_path.replace(".zip", ""), 'zip', cache)
             shutil.rmtree(cache)
@@ -126,7 +130,7 @@ class SaveManagerWindow(QDialog):
                 os.makedirs(cache)
             shutil.unpack_archive(file_path, cache, 'zip')
             info = readJson(os.path.join(cache, "manifest.json"))
-            logging.info(f"备份数据：{info}")
+            logging.info(f"[备份还原模块] 备份数据：{info}")
             save = info.get("save")
             filename = info.get("name")
             if info:
@@ -139,3 +143,49 @@ class SaveManagerWindow(QDialog):
                     QMessageBox.warning(self, "还原", "还原备份时出现问题：备份数据不存在")
             else:
                 QMessageBox.warning(self, "还原", "还原备份时出现问题：不是有效的备份文件")
+
+
+def auto_delete_backup_files_dynamic(_dir: str, dry_run=False):
+    """动态检测并删除所有BACKUP文件"""
+    current_dir = _dir
+    logging.info(f"[备份还原模块] 目录: {current_dir}")
+
+    # 查找所有带_BACKUP的文件
+    pattern = os.path.join(current_dir, "*_BACKUP*")
+    all_backup_files = glob.glob(pattern)
+
+    if not all_backup_files:
+        logging.info("[备份还原模块] 🎉 没有找到游戏运行产生的备份文件，无需清理")
+        return
+
+    # 统计文件信息
+    backup_files = []
+    max_backup_num = 0
+
+    for file_path in all_backup_files:
+        if os.path.isfile(file_path):
+            filename = os.path.basename(file_path)
+            # 使用正则匹配_BACKUP后面的数字
+            match = re.search(r'_BACKUP(\d+)', filename)
+            if match:
+                backup_num = int(match.group(1))
+                max_backup_num = max(max_backup_num, backup_num)
+                backup_files.append(file_path)
+
+    logging.info(f"[备份还原模块] 📊 找到 {len(backup_files)} 个游戏运行产生的备份文件")
+    logging.info(f"[备份还原模块] 🔢 最大备份编号: _BACKUP{max_backup_num}")
+
+    # 自动删除
+    logging.info(f"[备份还原模块] 🚀 开始自动删除 {len(backup_files)} 个游戏运行产生的备份文件...")
+
+    deleted_count = 0
+    for file_path in backup_files:
+        try:
+            if not dry_run:
+                os.remove(file_path)
+            logging.info(f"[备份还原模块] ✅ 已删除: {os.path.basename(file_path)}")
+            deleted_count += 1
+        except Exception as e:
+            logging.warning(f"[备份还原模块] ❌ 删除失败: {os.path.basename(file_path)} - {e}")
+
+    logging.info(f"[备份还原模块] 🎯 清理完成！成功删除 {deleted_count}/{len(backup_files)} 个文件")

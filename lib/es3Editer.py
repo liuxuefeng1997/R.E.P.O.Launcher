@@ -22,7 +22,7 @@ class Es3Editer:
                 es3 = ES3(f.read(), self.decrypting_password)
                 f.close()
         except Exception as e:
-            logging.error(e)
+            logging.error(f"[ES3Editer] {e}")
             return None
         return es3
 
@@ -36,7 +36,7 @@ class Es3Editer:
                 es3 = ES3(f.read(), self.decrypting_password)
                 f.close()
         except Exception as e:
-            logging.error(e)
+            logging.error(f"[ES3Editer] {e}")
             return {}
         return es3.load()
 
@@ -51,6 +51,6 @@ class Es3Editer:
                 json_str = json.dumps(save_data, ensure_ascii=False, indent=4)
                 f.write(self.read_es3_obj().save(json_str))
         except Exception as e:
-            logging.error(e)
+            logging.error(f"[ES3Editer] {e}")
             return False
         return True

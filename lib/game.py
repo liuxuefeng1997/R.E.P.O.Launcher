@@ -77,9 +77,9 @@ class Clear(QThread):
                     os.rmdir(root)
                     del_dir = os.path.basename(root)
                     self.sendProgress(f"已删除空文件夹: {del_dir}")
-                    logging.info(f"已删除空文件夹: {root}")
+                    logging.info(f"[清理模块] 已删除空文件夹: {root}")
                     removed_count += 1
                 except OSError as e:
-                    logging.debug(f"删除失败 {root}: {e}")
+                    logging.debug(f"[清理模块] 删除失败 {root}: {e}")
 
         return removed_count

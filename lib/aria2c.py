@@ -53,10 +53,10 @@ class Aria2cDownload(QThread):
         """检查RPC连接是否正常"""
         try:
             response = self.rpc_call('aria2.getVersion')
-            logging.info(f"连接到aria2c RPC服务成功，版本: {response.get('version', '未知')}")
+            logging.info(f"[Aria2] 连接到aria2c RPC服务成功，版本: {response.get('version', '未知')}")
             return True
         except Exception as e:
-            logging.error(f"连接aria2c RPC服务失败: {e}")
+            logging.error(f"[Aria2] 连接aria2c RPC服务失败: {e}")
             return False
 
     def rpc_call(self, method, params=None):
@@ -86,12 +86,12 @@ class Aria2cDownload(QThread):
             result = response.json()
 
             if 'error' in result:
-                logging.error(f"RPC调用错误: {result['error']}")
+                logging.error(f"[Aria2] RPC调用错误: {result['error']}")
                 raise Exception(f"RPC错误: {result['error']}")
 
             return result.get('result')
         except requests.exceptions.RequestException as e:
-            logging.error(f"RPC请求失败: {e}")
+            logging.error(f"[Aria2] RPC请求失败: {e}")
             raise
 
     def send_add_status(self, status: str):
@@ -129,13 +129,13 @@ class Aria2cDownload(QThread):
                     'start_time': time.time(),
                     'last_progress': 0
                 }
-                logging.info(f"已添加下载任务: {key}, GID: {gid}")
+                logging.info(f"[Aria2] 已添加下载任务: {key}, GID: {gid}")
                 self.send_add_status(f"添加更新队列 {key}")
             else:
                 raise Exception("无法获取任务GID")
 
         except Exception as e:
-            logging.error(f"添加下载任务失败: {e}")
+            logging.error(f"[Aria2] 添加下载任务失败: {e}")
             self.sendComplete(False, 0, self.curr_key)
 
     def monitor_downloads(self):
@@ -160,7 +160,7 @@ class Aria2cDownload(QThread):
                                 self.handle_download_completion(download_info, status)
 
                     except Exception as e:
-                        logging.error(f"获取任务状态失败 {gid}: {e}")
+                        logging.error(f"[Aria2] 获取任务状态失败 {gid}: {e}")
                         continue
 
                 # 移除已完成的任务
@@ -173,7 +173,7 @@ class Aria2cDownload(QThread):
                     time.sleep(1)  # 1秒间隔
 
             except Exception as e:
-                logging.error(f"监控下载进度出错: {e}")
+                logging.error(f"[Aria2] 监控下载进度出错: {e}")
                 time.sleep(2)  # 出错时等待2秒再重试
 
         # 所有下载完成
@@ -226,7 +226,7 @@ class Aria2cDownload(QThread):
                 download_info['last_progress'] = complete_percent
 
         except Exception as e:
-            logging.error(f"处理下载状态失败 {gid}: {e}")
+            logging.error(f"[Aria2] 处理下载状态失败 {gid}: {e}")
 
     def handle_download_completion(self, download_info, status):
         """处理下载完成"""
@@ -234,12 +234,12 @@ class Aria2cDownload(QThread):
         output_file = os.path.join(self.dir, key)
 
         if status['status'] == 'complete' and os.path.exists(output_file):
-            logging.info(f"下载完成: {key}")
+            logging.info(f"[Aria2] 下载完成: {key}")
             self.completed_downloads[key] = True
         else:
             error_code = status.get('errorCode', '未知错误')
             error_message = status.get('errorMessage', '下载失败')
-            logging.error(f"下载失败 {key}: {error_code} - {error_message}")
+            logging.error(f"[Aria2] 下载失败 {key}: {error_code} - {error_message}")
             self.completed_downloads[key] = False
 
     def stop_download(self):
@@ -250,9 +250,9 @@ class Aria2cDownload(QThread):
         for gid in list(self.active_downloads.keys()):
             try:
                 self.rpc_call('aria2.remove', [gid])
-                logging.info(f"已停止下载任务: {gid}")
+                logging.info(f"[Aria2] 已停止下载任务: {gid}")
             except Exception as e:
-                logging.error(f"停止下载任务失败 {gid}: {e}")
+                logging.error(f"[Aria2] 停止下载任务失败 {gid}: {e}")
 
     def pause_download(self, gid=None):
         """暂停下载任务"""
@@ -264,7 +264,7 @@ class Aria2cDownload(QThread):
                 # 暂停所有任务
                 self.rpc_call('aria2.pauseAll')
         except Exception as e:
-            logging.error(f"暂停下载失败: {e}")
+            logging.error(f"[Aria2] 暂停下载失败: {e}")
 
     def resume_download(self, gid=None):
         """恢复下载任务"""
@@ -276,14 +276,14 @@ class Aria2cDownload(QThread):
                 # 恢复所有任务
                 self.rpc_call('aria2.unpauseAll')
         except Exception as e:
-            logging.error(f"恢复下载失败: {e}")
+            logging.error(f"[Aria2] 恢复下载失败: {e}")
 
     def get_global_stat(self):
         """获取全局统计信息"""
         try:
             return self.rpc_call('aria2.getGlobalStat')
         except Exception as e:
-            logging.error(f"获取全局统计失败: {e}")
+            logging.error(f"[Aria2] 获取全局统计失败: {e}")
             return None
 
     def sendProgress(self, info: dict):
@@ -319,13 +319,13 @@ class Aria2cManager(QThread):
 
         # 先检查是否已有aria2c进程在运行
         if self.is_aria2c_running():
-            logging.info("检测到已有aria2c进程在运行")
+            logging.info("[Aria2] 检测到已有aria2c进程在运行")
             if self.wait_for_rpc_ready():
                 self.status_changed.emit(True, "连接到现有aria2c RPC服务")
                 self.rpc_ready.emit(True)
                 return
             else:
-                logging.warning("现有aria2c进程未启用RPC，将启动新进程")
+                logging.warning("[Aria2] 现有aria2c进程未启用RPC，将启动新进程")
 
         # 启动aria2c进程
         if self.start_aria2c():
@@ -347,7 +347,7 @@ class Aria2cManager(QThread):
             # 构建启动命令
             cmd = self.build_aria2c_command()
 
-            logging.info(f"启动aria2c命令: {' '.join(cmd)}")
+            logging.info(f"[Aria2] 启动aria2c命令: {' '.join(cmd)}")
 
             # 启动进程
             self.aria2c_process = subprocess.Popen(
@@ -365,14 +365,14 @@ class Aria2cManager(QThread):
             if self.aria2c_process.poll() is not None:
                 # 进程已退出
                 stderr = self.aria2c_process.stderr.read()
-                logging.error(f"aria2c启动失败: {stderr}")
+                logging.error(f"[Aria2] aria2c启动失败: {stderr}")
                 return False
 
-            logging.info(f"aria2c进程已启动，PID: {self.aria2c_process.pid}")
+            logging.info(f"[Aria2] aria2c进程已启动，PID: {self.aria2c_process.pid}")
             return True
 
         except Exception as e:
-            logging.error(f"启动aria2c时发生错误: {e}")
+            logging.error(f"[Aria2] 启动aria2c时发生错误: {e}")
             return False
 
     def build_aria2c_command(self):
@@ -418,11 +418,11 @@ class Aria2cManager(QThread):
 
         while time.time() - start_time < timeout:
             if self.check_rpc_connection():
-                logging.info("aria2c RPC服务已就绪")
+                logging.info("[Aria2] aria2c RPC服务已就绪")
                 return True
             time.sleep(1)
 
-        logging.error("等待RPC服务就绪超时")
+        logging.error("[Aria2] 等待RPC服务就绪超时")
         return False
 
     def check_rpc_connection(self):
@@ -478,9 +478,9 @@ class Aria2cManager(QThread):
                 return_code = self.aria2c_process.returncode
                 stdout, stderr = self.aria2c_process.communicate()
 
-                logging.warning(f"aria2c进程意外退出，返回码: {return_code}")
+                logging.warning(f"[Aria2] aria2c进程意外退出，返回码: {return_code}")
                 if stderr:
-                    logging.error(f"aria2c错误输出: {stderr}")
+                    logging.error(f"[Aria2] aria2c错误输出: {stderr}")
 
                 self.status_changed.emit(False, f"aria2c进程已退出 (代码: {return_code})")
                 self.rpc_ready.emit(False)
@@ -495,7 +495,7 @@ class Aria2cManager(QThread):
         try:
             # 首先尝试优雅关闭
             if self.aria2c_process and self.aria2c_process.poll() is None:
-                logging.info("正在停止aria2c进程...")
+                logging.info("[Aria2] 正在停止aria2c进程...")
 
                 # 发送shutdown命令到RPC
                 try:
@@ -510,10 +510,10 @@ class Aria2cManager(QThread):
                 # 等待进程结束
                 try:
                     self.aria2c_process.wait(timeout=10)
-                    logging.info("aria2c进程已正常停止")
+                    logging.info("[Aria2] aria2c进程已正常停止")
                 except subprocess.TimeoutExpired:
                     # 强制终止
-                    logging.warning("强制终止aria2c进程")
+                    logging.warning("[Aria2] 强制终止aria2c进程")
                     self.aria2c_process.kill()
                     self.aria2c_process.wait()
 
@@ -522,7 +522,7 @@ class Aria2cManager(QThread):
             self.status_changed.emit(False, "aria2c已停止")
 
         except Exception as e:
-            logging.error(f"停止aria2c时发生错误: {e}")
+            logging.error(f"[Aria2] 停止aria2c时发生错误: {e}")
 
     def send_shutdown_command(self):
         """通过RPC发送关闭命令"""
@@ -545,7 +545,7 @@ class Aria2cManager(QThread):
                 timeout=5
             )
         except Exception as e:
-            logging.debug(f"通过RPC关闭aria2c失败: {e}")
+            logging.debug(f"[Aria2] 通过RPC关闭aria2c失败: {e}")
 
     def get_rpc_config(self):
         """获取RPC配置信息"""
@@ -557,7 +557,7 @@ class Aria2cManager(QThread):
 
     def restart_aria2c(self):
         """重启aria2c服务"""
-        logging.info("重启aria2c服务...")
+        logging.info("[Aria2] 重启aria2c服务...")
         self.stop_aria2c()
         time.sleep(2)
         self._is_running = True
