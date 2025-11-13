@@ -17,7 +17,7 @@ def checkRun(process_name):
 if __name__ == '__main__':
     opts = None
     # 开始更新延迟（秒）
-    start = 15
+    start = 10
     # 更新结束延迟（秒）
     end = 3
     try:
