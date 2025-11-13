@@ -21,11 +21,11 @@ class mainWindow(QMainWindow):
         super(mainWindow, self).__init__()
         logging.info("[主窗口] 初始化窗口中")
         logging.info(run_path)
-        # 初始化图片资源
+        # 初始化图片资源=============================================
         self.Icon = QIcon(os.path.join(source_path, "repo.ico"))
         self.checkIcon = QIcon(os.path.join(source_path, "check.png"))
         self.emptyIcon = QIcon()
-        # 初始化变量
+        # 初始化变量=================================================
         self.supported_update_channel = getCOSConfJsonObject(TencentCloud.Update.self_update_channel_list_url)
         self.down = None
         self.clear = None
@@ -33,18 +33,19 @@ class mainWindow(QMainWindow):
         self.chkUp = None
         self.cleanup_thread = None
         self.run_once = False  # 首次运行 Flag
-        # 初始化aria2c
+        self.dev_flag = 0
+        # 初始化aria2c================================================
         self.setup_aria2c()
-        # 设置窗口标题和大小
+        # 设置窗口标题和大小============================================
         self.setWindowTitle("R.E.P.O.启动器")
         self.setWindowIcon(self.Icon)
         self.resize(300, 224)
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
         self.setFixedSize(self.width(), self.height())
-        # 初始化托盘图标
+        # 初始化托盘图标================================================
         self.tray = QSystemTrayIcon(self)
         self.tray.setIcon(self.Icon)
-        # 窗口组件
+        # 窗口组件=====================================================
         self.image_label = QLabel(self)
         self.image_label.setGeometry(5, 0, 295, 171)
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -53,6 +54,7 @@ class mainWindow(QMainWindow):
                 qproperty-alignment: AlignCenter;
             }
         """)
+        self.image_label.mousePressEvent = self.clickImage
 
         self.button_start = QPushButton(self)
         self.button_start.setGeometry(10, 176, 280, 24)
@@ -65,7 +67,7 @@ class mainWindow(QMainWindow):
         self.button_close.setText("结束")
         self.button_close.clicked.connect(self.buttonClose_onClick)
         self.button_close.setHidden(True)
-        # 托盘右键菜单
+        # 托盘右键菜单=====================================================
         self.trayMenu = QMenu(self)
 
         self.showAction = QAction(self)
@@ -114,6 +116,28 @@ class mainWindow(QMainWindow):
         self.updateAction.triggered.connect(self.buttonUpdate_onClick)
         self.trayMenu.addAction(self.updateAction)
 
+        # 开发菜单-开始==========================================
+        self.devMenu = QMenu(self)
+        self.devMenu.setTitle("开发")
+
+        self.logDirAction = QAction(self)
+        self.logDirAction.setText("日志目录")
+        self.logDirAction.triggered.connect(self.openLogDir)
+        self.devMenu.addAction(self.logDirAction)
+
+        self.gameDirAction = QAction(self)
+        self.gameDirAction.setText("游戏目录")
+        self.gameDirAction.triggered.connect(self.openGameDir)
+        self.devMenu.addAction(self.gameDirAction)
+
+        self.saveDirAction = QAction(self)
+        self.saveDirAction.setText("存档目录")
+        self.saveDirAction.triggered.connect(self.openSaveDir)
+        self.devMenu.addAction(self.saveDirAction)
+
+        self.trayMenu.addMenu(self.devMenu)
+        # 开发菜单-结束===========================================
+
         self.aboutAction = QAction(self)
         self.aboutAction.setText("关于")
         self.aboutAction.triggered.connect(self.buttonAbout_onClick)
@@ -130,22 +154,23 @@ class mainWindow(QMainWindow):
         self.tray.activated.connect(self._tray)
         self.tray.setToolTip("R.E.P.O.启动器\n双击：显示/隐藏")
         self.tray.show()
-        # 游戏检测
+        # 游戏检测=====================================================
         self.chkGame = CheckGame()
         self.chkGame.run_stat.connect(self.gameCheck)
         self.chkGame.start()
-        # 初始化状态栏
+        # 初始化状态栏==================================================
         self.statusBar = QStatusBar(self)
         self.statusBar.setGeometry(0, 202, 300, 22)
         self.statusBar.setSizeGripEnabled(False)
         self.statusBar.showMessage("程序准备中")
         logging.info("[主窗口] 窗口初始化结束")
-        # 加载配置
+        # 加载配置=====================================================
         gui = readJson(os.path.join(config_path, "gui.json"))
         curr_channel = gui.get("channel", "release")
-        # 初始化界面中的配置
+        # 初始化界面中的配置=============================================
         self.channelActions[curr_channel].setIcon(self.checkIcon)
         self.load_image(os.path.join(source_path, "logo.png"))
+        self.devMenu.menuAction().setVisible(False)
 
     # 加载主界面图片
     def load_image(self, image_path):
@@ -169,6 +194,37 @@ class mainWindow(QMainWindow):
         except Exception as e:
             self.image_label.setText("R.E.P.O. 启动器")
             logging.error(f"[主窗口] 错误，主图加载失败: {str(e)}")
+
+    # 开发入口
+    def clickImage(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            if self.dev_flag >= 9:
+                self.statusBar.showMessage("开发菜单已启用，下次启动失效", 3*1000)
+                self.devMenu.menuAction().setVisible(True)
+            else:
+                self.statusBar.showMessage(f"再点击 {9 - self.dev_flag} 次，启用开发菜单", 3*1000)
+                self.dev_flag += 1
+
+    def openLogDir(self):
+        logging.info(f"[DEV] 打开日志目录: {log_path} | {self.dev_flag == 9}")
+        try:
+            os.startfile(log_path)
+        except Exception as e:
+            logging.debug(f"[DEV] {e}")
+
+    def openSaveDir(self):
+        logging.info(f"[DEV] 打开存档目录: {game_save_path} | {self.dev_flag == 9}")
+        try:
+            os.startfile(game_save_path)
+        except Exception as e:
+            logging.debug(f"[DEV] {e}")
+
+    def openGameDir(self):
+        logging.info(f"[DEV] 打开游戏目录: {run_path} | {self.dev_flag == 9}")
+        try:
+            os.startfile(run_path)
+        except Exception as e:
+            logging.debug(f"[DEV] {e}")
 
     # 存档管理器按钮事件
     def buttonSaveManager_onClick(self):
@@ -405,7 +461,7 @@ class mainWindow(QMainWindow):
         self.startAction.setText("准备启动...")
         if self.isHidden():
             self.show()
-        QTimer.singleShot(500, lambda: self.gameStart())
+        QTimer(self).singleShot(500, lambda: self.gameStart())
 
     # 启动游戏流程
     def gameStart(self):
@@ -474,7 +530,7 @@ class mainWindow(QMainWindow):
     def clearEnd(self, e):
         self.statusBar.showMessage("更新清理完成，准备启动游戏", 3000)
         logging.debug(e)
-        QTimer.singleShot(3000, lambda: self.startGame())
+        QTimer(self).singleShot(3000, lambda: self.startGame())
 
     # 清理进度回调（更新和验证完整性共用，因为状态栏只有一个）
     def clearProgress(self, e):

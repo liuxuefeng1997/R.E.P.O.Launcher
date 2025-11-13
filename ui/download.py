@@ -71,7 +71,7 @@ class DownloadWindow(QDialog):
         if e:
             self.versions = {}
             self.label.setText("下载完成")
-        QTimer.singleShot(1000, lambda: self.close())
+        QTimer(self).singleShot(1000, lambda: self.close())
 
     def closeEvent(self, e):
         self.send(self.dicts)

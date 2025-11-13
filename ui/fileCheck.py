@@ -77,7 +77,7 @@ class fileCheckWindow(QDialog):
         else:
             self.label.setText("验证完成，文件没有问题")
         # 延迟 1 秒执行发送事件，解决检查窗口未关闭，下载窗口就已经出现的问题
-        QTimer.singleShot(1000, lambda: self.do_send_complete(restore_list, dicts))
+        QTimer(self).singleShot(1000, lambda: self.do_send_complete(restore_list, dicts))
 
     def do_send_complete(self, restore_list: list, dicts: dict):
         self.send(not len(restore_list) > 0, restore_list, dicts)

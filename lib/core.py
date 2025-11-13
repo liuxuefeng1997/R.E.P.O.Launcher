@@ -7,7 +7,6 @@ import winreg
 import psutil
 import requests as requests
 from PyQt6.QtCore import *
-from PyQt6.QtWidgets import QMessageBox
 
 from data.api_setting import TencentCloud
 from data.appInfo import ver, game_appId, game_name, patch_type
@@ -16,6 +15,7 @@ from lib.path import *
 run_path = os.path.abspath('.')
 config_path = os.path.join(run_path, "config")
 backup_path = os.path.join(run_path, "backups")
+log_path = os.path.join(run_path, "logs")
 plugin_path = resource_path("plugins")
 source_path = resource_path("sources")
 localLow_path = os.path.expandvars(r"%localappdata%Low")
@@ -27,12 +27,12 @@ self_uuid = hashlib.md5(f"{game_name}{game_appId}{patch_type}{run_path}".encode(
 def init_log():
     NOW_TIME_WITH_NO_SPACE = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
     if getattr(sys, 'frozen', False):
-        if not os.path.exists(r'.\logs'):
-            os.mkdir(r'.\logs')
+        if not os.path.exists(log_path):
+            os.mkdir(log_path)
         logging.basicConfig(
             level=logging.INFO,
             format='[%(asctime)s][%(levelname)s] %(message)s',
-            handlers=[logging.FileHandler(filename=rf'.\logs\log_{NOW_TIME_WITH_NO_SPACE}.txt', mode='w', encoding='utf-8')]
+            handlers=[logging.FileHandler(filename=os.path.join(log_path, f'log_{NOW_TIME_WITH_NO_SPACE}.txt'), mode='w', encoding='utf-8')]
         )
     else:
         logging.basicConfig(
