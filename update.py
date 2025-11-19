@@ -31,7 +31,7 @@ if __name__ == '__main__':
                     start += 1
                     end += 1
                     print(f"[{colored('本体更新', 'cyan')}] 准备开始更新")
-                    for s in reversed(range(start=start, stop=1)):
+                    for s in reversed(range(start)):
                         print(f"[{colored('本体更新', 'cyan')}] 等待程序结束 {s}")
                         time.sleep(1)
                     print(f"[{colored('本体更新', 'cyan')}] 正在更新至版本：{arg}")
@@ -41,7 +41,7 @@ if __name__ == '__main__':
                         os.remove("R.E.P.O.Launcher.exe")
                     os.rename(arg, "R.E.P.O.Launcher.exe")
                     print(f"[{colored('本体更新', 'green')}] 更新完成，准备重启")
-                    for s in reversed(range(start=end, stop=1)):
+                    for s in reversed(range(end)):
                         print(f"[{colored('本体更新', 'cyan')}] 准备重启 {s}")
                         time.sleep(1)
                     os.system('start R.E.P.O.Launcher.exe')

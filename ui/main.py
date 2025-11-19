@@ -373,10 +373,10 @@ class mainWindow(QMainWindow):
         else:
             buttons = QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No | QMessageBox.StandardButton.Ignore
         box = QMessageBox.question(
-            parent=self,
-            title="更新",
-            text="<p>发现新版本："f"{version}""</p><p>"f"{log}"'</p><p><a href="https://docs.qq.com/markdown/DZE1ycUZjdk1mV2RX">完整更新日志</a></p><p>要现在进行更新吗？</p>',
-            buttons=buttons
+            self,
+            "更新",
+            "<p>发现新版本："f"{version}""</p><p>"f"{log}"'</p><p><a href="https://docs.qq.com/markdown/DZE1ycUZjdk1mV2RX">完整更新日志</a></p><p>要现在进行更新吗？</p>',
+            buttons
         )
         if box == QMessageBox.StandardButton.Yes:
             self.do_update(version)
