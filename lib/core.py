@@ -42,12 +42,12 @@ def init_log():
 
 
 def network_check():
+    chk = False
     try:
-        requests.get("https://test.ipw.cn")
+        requests.get("http://connectivitycheck.platform.hicloud.com/generate_204")
         chk = True
     except Exception as e:
-        logging.debug(f"[Core] {e}")
-        chk = False
+        logging.info(f"[Core] {e}")
     return chk
 
 
