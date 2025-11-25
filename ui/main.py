@@ -558,4 +558,4 @@ class mainWindow(QMainWindow):
     # 关于按钮事件
     def buttonAbout_onClick(self):
         QMessageBox.information(self, "关于", '<p>版本: 'f'{ver}''</p><p><a href="https://docs.qq.com/markdown/DZE1ycUZjdk1mV2RX">更新日志</a></p>'
-                                            '<p><a href="https://afdian.com/a/xingKongVersionRX">服务器赞助</a></p>')
+                                            '<p>服务器赞助</p><p><a href="https://afdian.com/a/xingKongVersionRX">爱发电</a> | <a href="https://www.mailx.top/images/wxpay/wxpay.jpeg">微信支付</a></p>')
