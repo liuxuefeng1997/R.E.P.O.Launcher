@@ -455,6 +455,9 @@ class mainWindow(QMainWindow):
 
     # 重写关闭事件
     def closeEvent(self, event):
+        if not QMessageBox.warning(self, "R.E.P.O.启动器", "确定要退出启动器吗？", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
+            event.ignore()
+            return
         self.statusBar.showMessage("正在结束程序")
         logging.info("[主窗口] 准备结束程序")
         self.button_start.setEnabled(False)
