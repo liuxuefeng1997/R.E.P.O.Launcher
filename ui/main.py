@@ -153,6 +153,7 @@ class mainWindow(QMainWindow):
         self.tray.setContextMenu(self.trayMenu)
         self.tray.activated.connect(self._tray)
         self.tray.setToolTip("R.E.P.O.启动器\n双击：显示/隐藏")
+        self.tray.messageClicked.connect(self.on_notification_clicked)
         self.tray.show()
         # 游戏检测=====================================================
         self.chkGame = CheckGame()
@@ -195,6 +196,32 @@ class mainWindow(QMainWindow):
             self.image_label.setText("R.E.P.O. 启动器")
             logging.error(f"[主窗口] 错误，主图加载失败: {str(e)}")
 
+    # 发送系统通知
+    def send_notification(self, _title: str, _message: str, _showTime=5000, _noticeLevel="Info"):
+        """
+        发送系统通知
+        :param _title: 通知标题
+        :param _message: 通知内容
+        :param _showTime: 显示时间（ms）
+        :param _noticeLevel: 通知类型（Info | Warn | Error）
+        """
+        if _noticeLevel == "Warn":
+            _sys_msg_icon = QSystemTrayIcon.MessageIcon.Warning
+        elif _noticeLevel == "Error":
+            _sys_msg_icon = QSystemTrayIcon.MessageIcon.Critical
+        else:
+            _sys_msg_icon = QSystemTrayIcon.MessageIcon.Information
+        self.tray.showMessage(
+            _title,
+            _message,
+            _sys_msg_icon,
+            _showTime  # 显示时长（毫秒）
+        )
+
+    # 通知点击事件
+    def on_notification_clicked(self):
+        pass
+
     # 开发入口
     def clickImage(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -202,7 +229,8 @@ class mainWindow(QMainWindow):
                 self.statusBar.showMessage("开发菜单已启用，下次启动失效", 3*1000)
                 self.devMenu.menuAction().setVisible(True)
             else:
-                self.statusBar.showMessage(f"再点击 {9 - self.dev_flag} 次，启用开发菜单", 3*1000)
+                if self.dev_flag >= 3:
+                    self.statusBar.showMessage(f"再点击 {9 - self.dev_flag} 次，启用开发菜单", 3*1000)
                 self.dev_flag += 1
 
     def openLogDir(self):
