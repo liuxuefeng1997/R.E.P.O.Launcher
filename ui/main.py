@@ -33,6 +33,7 @@ class mainWindow(QMainWindow):
         self.chkUp = None
         self.cleanup_thread = None
         self.run_once = False  # 首次运行 Flag
+        self._isUpdate = False
         self.dev_flag = 0
         # 初始化aria2c================================================
         self.setup_aria2c()
@@ -451,11 +452,12 @@ class mainWindow(QMainWindow):
                     wShowWindow=0
                 )
             )
+            self._isUpdate = True
             self.close()
 
     # 重写关闭事件
     def closeEvent(self, event):
-        if not QMessageBox.warning(self, "R.E.P.O.启动器", "确定要退出启动器吗？", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
+        if not self._isUpdate and not QMessageBox.warning(self, "R.E.P.O.启动器", "确定要退出启动器吗？", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
             event.ignore()
             return
         self.statusBar.showMessage("正在结束程序")
