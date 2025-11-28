@@ -35,6 +35,7 @@ class mainWindow(QMainWindow):
         self.run_once = False  # 首次运行 Flag
         self._isUpdate = False
         self.dev_flag = 0
+        self.notification = {}
         # 初始化aria2c================================================
         self.setup_aria2c()
         # 设置窗口标题和大小============================================
@@ -198,13 +199,14 @@ class mainWindow(QMainWindow):
             logging.error(f"[主窗口] 错误，主图加载失败: {str(e)}")
 
     # 发送系统通知
-    def send_notification(self, _title: str, _message: str, _showTime=5000, _noticeLevel="Info"):
+    def send_notification(self, _title: str, _message: str, _showTime=5000, _noticeLevel="Info", _event=None):
         """
         发送系统通知
         :param _title: 通知标题
         :param _message: 通知内容
         :param _showTime: 显示时间（ms）
         :param _noticeLevel: 通知类型（Info | Warn | Error）
+        :param _event: 通知点击事件执行函数
         """
         if _noticeLevel == "Warn":
             _sys_msg_icon = QSystemTrayIcon.MessageIcon.Warning
@@ -212,6 +214,11 @@ class mainWindow(QMainWindow):
             _sys_msg_icon = QSystemTrayIcon.MessageIcon.Critical
         else:
             _sys_msg_icon = QSystemTrayIcon.MessageIcon.Information
+        self.notification = {
+            "title": _title,
+            "msg": _message,
+            "event": _event
+        }
         self.tray.showMessage(
             _title,
             _message,
@@ -221,17 +228,32 @@ class mainWindow(QMainWindow):
 
     # 通知点击事件
     def on_notification_clicked(self):
-        pass
+        def _example():
+            pass
+        if self.notification:
+            logging.info(f"[通知模块] 用户点击通知 {self.notification.get('title')}: {self.notification.get('msg')}")
+            func = self.notification.get("event", None)
+            if func and type(func) == type(_example):
+                logging.info("[通知模块] 此通知存在事件函数，开始执行")
+                try:
+                    func()
+                except Exception as e:
+                    logging.error(f"[通知模块] 执行事件函数出错：{e}")
+        self.notification = {}
+        logging.info("[通知模块] 通知事件处理结束")
 
     # 开发入口
     def clickImage(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
             if self.dev_flag >= 9:
-                self.statusBar.showMessage("开发菜单已启用，下次启动失效", 3*1000)
-                self.devMenu.menuAction().setVisible(True)
+                if self.dev_flag == 9:
+                    self.statusBar.showMessage("开发菜单已启用，下次启动失效", 3*1000)
+                    self.send_notification("R.E.P.O.启动器", "开发菜单已启用，下次启动失效", 3000)
+                    self.devMenu.menuAction().setVisible(True)
+                    self.dev_flag += 1
             else:
                 if self.dev_flag >= 3:
-                    self.statusBar.showMessage(f"再点击 {9 - self.dev_flag} 次，启用开发菜单", 3*1000)
+                    self.statusBar.showMessage(f"再点击 {9 - self.dev_flag} 次，启用开发菜单", 3 * 1000)
                 self.dev_flag += 1
 
     def openLogDir(self):
@@ -328,7 +350,8 @@ class mainWindow(QMainWindow):
 
     # 验证清理结束
     def chkClrEnd(self, event):
-        self.statusBar.showMessage("验证完整性完成", 3*1000)
+        self.send_notification("验证完整性", "验证完整性完成")
+        self.statusBar.showMessage("验证完整性完成", 3 * 1000)
 
     # 检查更新按钮事件
     def buttonUpdate_onClick(self):
@@ -343,7 +366,8 @@ class mainWindow(QMainWindow):
 
     def noUpdate(self, show):
         if show:
-            QMessageBox.information(self, "更新", '已是最新版本')
+            self.send_notification("检查更新", "已是最新版本")
+            # QMessageBox.information(self, "更新", '已是最新版本')
 
     # Aria2c 相关
     # 初始化 aria2c rpc
