@@ -219,6 +219,7 @@ class mainWindow(QMainWindow):
             "msg": _message,
             "event": _event
         }
+        logging.info(f"[通知模块] 发送系统通知 {_title}: {_message} | {_noticeLevel}")
         self.tray.showMessage(
             _title,
             _message,
