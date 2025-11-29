@@ -234,7 +234,7 @@ class mainWindow(QMainWindow):
         if self.notification:
             logging.info(f"[通知模块] 用户点击通知 {self.notification.get('title')}: {self.notification.get('msg')}")
             func = self.notification.get("event", None)
-            if func and type(func) == type(_example):
+            if type(func) == type(_example):
                 logging.info("[通知模块] 此通知存在事件函数，开始执行")
                 try:
                     func()
@@ -616,4 +616,4 @@ class mainWindow(QMainWindow):
     # 关于按钮事件
     def buttonAbout_onClick(self):
         QMessageBox.information(self, "关于", '<p>版本: 'f'{ver}''</p><p><a href="https://docs.qq.com/markdown/DZE1ycUZjdk1mV2RX">更新日志</a></p>'
-                                            '<p>服务器赞助</p><p><a href="https://afdian.com/a/xingKongVersionRX">爱发电</a> | <a href="https://www.mailx.top/images/wxpay/wxpay.jpeg">微信支付</a></p>')
+                                            '<p>服务器赞助</p><p><a href="https://www.mailx.top/images/wxpay/wxpay.jpeg">微信支付</a></p>')
