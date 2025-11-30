@@ -169,9 +169,12 @@ class mainWindow(QMainWindow):
         logging.info("[主窗口] 窗口初始化结束")
         # 加载配置=====================================================
         gui = readJson(os.path.join(config_path, "gui.json"))
-        curr_channel = gui.get("channel", "release")
+        # 初始化更新通道================================================
+        curr_channel = "release"
+        if gui.get("channel", "release") in self.channelActions.keys():
+            curr_channel = gui.get("channel", "release")
         # 初始化界面中的配置=============================================
-        self.channelActions[curr_channel].setIcon(self.checkIcon)
+        self.changeChannel(curr_channel)
         self.load_image(os.path.join(source_path, "logo.png"))
         self.devMenu.menuAction().setVisible(False)
 
