@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # 所有补丁安装器源码信息
     game_list = [
         ("update", "update", "2.0"),
-        ("app", appInfo.title, appInfo.ver)
+        ("app", appInfo.app_name, appInfo.ver)
     ]
     cmd = "@echo off\nchcp 65001\n\ncd %~dp0\n\n"
     print("[Info]\033[35m数据初始化完成\033[0m")
@@ -41,8 +41,8 @@ if __name__ == '__main__':
     print("[Info]\033[35m正在创建更新补丁\033[0m")
     if not os.path.exists(os.path.join(os.path.abspath("."), ".release_build")):
         os.makedirs(os.path.join(os.path.abspath("."), ".release_build"))
-    if os.path.exists(f"dist/{appInfo.title}.exe"):
-        os.rename(f"dist/{appInfo.title}.exe", f"dist/{appInfo.ver}")
+    if os.path.exists(f"dist/{appInfo.app_name}.exe"):
+        os.rename(f"dist/{appInfo.app_name}.exe", f"dist/{appInfo.ver}")
     shutil.make_archive(os.path.join(os.path.abspath("."), ".release_build", f"{appInfo.ver}_update.data"), 'zip', os.path.join(os.path.abspath("."), "dist"))
     if os.path.exists(os.path.join(os.path.abspath("."), ".release_build", f"{appInfo.ver}_update.data.zip")):
         os.rename(os.path.join(os.path.abspath("."), ".release_build", f"{appInfo.ver}_update.data.zip"), os.path.join(os.path.abspath("."), ".release_build", f"{appInfo.ver}_update.data"))

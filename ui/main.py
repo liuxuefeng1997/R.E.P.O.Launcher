@@ -39,7 +39,7 @@ class mainWindow(QMainWindow):
         # 初始化aria2c================================================
         self.setup_aria2c()
         # 设置窗口标题和大小============================================
-        self.setWindowTitle("R.E.P.O.启动器")
+        self.setWindowTitle(app_name)
         self.setWindowIcon(self.Icon)
         self.resize(300, 224)
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
@@ -154,7 +154,7 @@ class mainWindow(QMainWindow):
 
         self.tray.setContextMenu(self.trayMenu)
         self.tray.activated.connect(self._tray)
-        self.tray.setToolTip("R.E.P.O.启动器\n双击：显示/隐藏")
+        self.tray.setToolTip(f"{app_name}\n双击：显示/隐藏")
         self.tray.messageClicked.connect(self.on_notification_clicked)
         self.tray.show()
         # 游戏检测=====================================================
@@ -195,10 +195,10 @@ class mainWindow(QMainWindow):
                 )
                 logging.info("[主窗口] 主图成功加载")
             else:
-                self.image_label.setText("R.E.P.O. 启动器")
+                self.image_label.setText(app_name)
                 logging.error("[主窗口] 错误：主图加载失败，对象为空")
         except Exception as e:
-            self.image_label.setText("R.E.P.O. 启动器")
+            self.image_label.setText(app_name)
             logging.error(f"[主窗口] 错误，主图加载失败: {str(e)}")
 
     # 发送系统通知
@@ -252,7 +252,7 @@ class mainWindow(QMainWindow):
             if self.dev_flag >= 9:
                 if self.dev_flag == 9:
                     self.statusBar.showMessage("开发菜单已启用，下次启动失效", 3*1000)
-                    self.send_notification("R.E.P.O.启动器", "开发菜单已启用，下次启动失效", 3000)
+                    self.send_notification(app_name, "开发菜单已启用，下次启动失效", 3000)
                     self.devMenu.menuAction().setVisible(True)
                     self.dev_flag += 1
             else:
@@ -354,7 +354,7 @@ class mainWindow(QMainWindow):
 
     # 验证清理结束
     def chkClrEnd(self, event):
-        self.send_notification("验证完整性", "验证完整性完成")
+        self.send_notification("验证模组内容完整性", "验证已完成")
         self.statusBar.showMessage("验证完整性完成", 3 * 1000)
 
     # 检查更新按钮事件
@@ -370,7 +370,7 @@ class mainWindow(QMainWindow):
 
     def noUpdate(self, show):
         if show:
-            self.send_notification("检查更新", "已是最新版本")
+            self.send_notification(app_name, "已是最新版本")
             # QMessageBox.information(self, "更新", '已是最新版本')
 
     # Aria2c 相关
@@ -473,7 +473,7 @@ class mainWindow(QMainWindow):
             if os.path.exists(os.path.join(run_path, f"{k}")):
                 os.remove(os.path.join(run_path, f"{k}"))
             subprocess.Popen(
-                f'start "R.E.P.O.启动器 | 更新" update.exe -n {k.replace("_update.data", "")}',
+                f'start "{app_name} | 更新" update.exe -n {k.replace("_update.data", "")}',
                 shell=True,
                 startupinfo=subprocess.STARTUPINFO(
                     dwFlags=subprocess.STARTF_USESHOWWINDOW,
@@ -485,7 +485,7 @@ class mainWindow(QMainWindow):
 
     # 重写关闭事件
     def closeEvent(self, event):
-        if not self._isUpdate and not QMessageBox.warning(self, "R.E.P.O.启动器", "确定要退出启动器吗？", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
+        if not self._isUpdate and not QMessageBox.warning(self, app_name, "确定要退出启动器吗？", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
             event.ignore()
             return
         self.statusBar.showMessage("正在结束程序")
@@ -619,4 +619,4 @@ class mainWindow(QMainWindow):
     # 关于按钮事件
     def buttonAbout_onClick(self):
         QMessageBox.information(self, "关于", '<p>版本: 'f'{ver}''</p><p><a href="https://docs.qq.com/markdown/DZE1ycUZjdk1mV2RX">更新日志</a></p>'
-                                            '<p>服务器赞助</p><p><a href="https://www.mailx.top/images/wxpay/wxpay.jpeg">微信支付</a></p>')
+                                            '<p>服务器赞助</p><p><a href="https://www.mailx.top/images/wxpay/wxpay.jpeg">微信支付</a> | <a href="https://afdian.com/a/xingKongVersionRX">爱发电</a></p>')
