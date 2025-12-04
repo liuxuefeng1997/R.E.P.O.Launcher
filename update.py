@@ -4,7 +4,8 @@ import sys
 import time
 
 import psutil
-from termcolor import colored
+
+from data.appInfo import app_name
 
 
 def checkRun(process_name):
@@ -24,20 +25,20 @@ if __name__ == '__main__':
         for opt, arg in opts:
             if opt in ("-n", "--new"):
                 if os.path.exists(arg):
-                    print(f"[{colored('本体更新', 'cyan')}] 准备开始更新")
+                    print(f"[{app_name} | 更新] 准备开始更新")
                     for s in range(1, 60):
                         if checkRun("R.E.P.O.Launcher.exe"):
-                            print(f"[{colored('本体更新', 'cyan')}] 等待程序结束 {s}")
+                            print(f"[{app_name} | 更新] 等待程序结束 {s}")
                         else:
                             break
                         time.sleep(1)
-                    print(f"[{colored('本体更新', 'cyan')}] 正在更新至版本：{arg}")
+                    print(f"[{app_name} | 更新] 正在更新至版本：{arg}")
                     if os.path.exists("R.E.P.O.Launcher.exe"):
                         os.remove("R.E.P.O.Launcher.exe")
                     os.rename(arg, "R.E.P.O.Launcher.exe")
-                    print(f"[{colored('本体更新', 'green')}] 更新完成，准备重启")
+                    print(f"[{app_name} | 更新] 更新完成，准备重启")
                     for s in reversed(range(1, 3)):
-                        print(f"[{colored('本体更新', 'cyan')}] 准备重启 {s}")
+                        print(f"[{app_name} | 更新] 准备重启 {s}")
                         time.sleep(1)
                     os.system('start R.E.P.O.Launcher.exe')
                 else:
