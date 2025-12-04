@@ -16,8 +16,6 @@ def checkRun(process_name):
 
 if __name__ == '__main__':
     opts = None
-    # 开始更新延迟（秒）
-    start = 6
     # 更新结束延迟（秒）
     end = 3
     try:
@@ -28,11 +26,13 @@ if __name__ == '__main__':
         for opt, arg in opts:
             if opt in ("-n", "--new"):
                 if os.path.exists(arg):
-                    start += 1
                     end += 1
                     print(f"[{colored('本体更新', 'cyan')}] 准备开始更新")
-                    for s in reversed(range(start)):
-                        print(f"[{colored('本体更新', 'cyan')}] 等待程序结束 {s}")
+                    for s in range(1, 60):
+                        if checkRun("R.E.P.O.Launcher.exe"):
+                            print(f"[{colored('本体更新', 'cyan')}] 等待程序结束 {s}")
+                        else:
+                            break
                         time.sleep(1)
                     print(f"[{colored('本体更新', 'cyan')}] 正在更新至版本：{arg}")
                     if os.path.exists("R.E.P.O.-模组在线更新器.exe"):
