@@ -13,7 +13,7 @@ from data.appInfo import ver, game_appId, game_name, patch_type
 from lib.path import *
 from lib.config import Config
 
-run_path = os.path.abspath('.')
+run_path = os.getcwd()
 config_path = os.path.join(run_path, "config")
 backup_path = os.path.join(run_path, "backups")
 log_path = os.path.join(run_path, "logs")

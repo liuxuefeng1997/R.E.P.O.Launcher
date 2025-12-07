@@ -37,7 +37,7 @@ if __name__ == '__main__':
                         os.remove("R.E.P.O.Launcher.exe")
                     os.rename(arg, "R.E.P.O.Launcher.exe")
                     print(f"[{app_name} | 更新] 更新完成，准备重启")
-                    for s in reversed(range(1, 3)):
+                    for s in reversed(range(1, 4)):
                         print(f"[{app_name} | 更新] 准备重启 {s}")
                         time.sleep(1)
                     os.system('start R.E.P.O.Launcher.exe')

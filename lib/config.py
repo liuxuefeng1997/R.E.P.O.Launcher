@@ -1,5 +1,4 @@
 import json
-import logging
 import os.path
 
 
@@ -11,7 +10,6 @@ class Config:
         """
         super(Config, self).__init__()
         self.config_path = _config_path
-        logging.info(f"[配置管理模块] 已初始化: {_config_path}")
 
     @staticmethod
     def _readJson(path: str) -> dict:
@@ -31,7 +29,7 @@ class Config:
                 f.close()
             r = True
         except Exception as e:
-            logging.error(f"[配置管理模块] {e}")
+            print(f"[配置管理模块] {e}")
             r = False
         return r
 
@@ -46,7 +44,6 @@ class Config:
         """
         conf = self._readJson(os.path.join(self.config_path, config_file))
         value = conf.get(config_session, {}).get(config_item, default_value)
-        logging.info(f"[配置管理模块] 读取配置: {config_file} - {config_session}, {config_item} = {value}")
         return value
 
     def write(self, config_file: str, config_session: str, config_item: str, config_value=None):
@@ -61,13 +58,9 @@ class Config:
         conf = self._readJson(os.path.join(self.config_path, config_file))
         if not conf.get(config_session):
             conf.update({config_session: {}})
-            logging.info(f"[配置管理模块] 写入配置: {config_file} - {config_session} 不存在，已添加")
         conf.get(config_session, {}).update({config_item: config_value})
-        logging.info(f"[配置管理模块] 写入配置: {config_file} - {config_session}, {config_item} = {'null' if config_value is None else config_value}")
         if config_value is None and not type(config_value) == bool:
             conf.get(config_session, {}).pop(config_item)
-            logging.info(f"[配置管理模块] 写入配置: {config_file} - {config_session}, {config_item} = null 已移除此项目")
         if not conf.get(config_session, {}):
             conf.pop(config_session)
-            logging.info(f"[配置管理模块] 写入配置: {config_file} - {config_session} 项下无任何内容，已移除")
         self._writeJson(os.path.join(self.config_path, config_file), conf)
