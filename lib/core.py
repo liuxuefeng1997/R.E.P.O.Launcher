@@ -11,6 +11,7 @@ from PyQt6.QtCore import *
 from data.api_setting import TencentCloud
 from data.appInfo import ver, game_appId, game_name, patch_type
 from lib.path import *
+from lib.config import Config
 
 run_path = os.path.abspath('.')
 config_path = os.path.join(run_path, "config")
@@ -22,6 +23,7 @@ localLow_path = os.path.expandvars(r"%localappdata%Low")
 game_save_path = os.path.join(localLow_path, r"semiwork\Repo\saves")
 aria2_path = os.path.join(plugin_path, "aria2c.exe")
 self_uuid = hashlib.md5(f"{game_name}{game_appId}{patch_type}{run_path}".encode("utf8")).hexdigest()
+config = Config(config_path)
 
 
 def init_log():

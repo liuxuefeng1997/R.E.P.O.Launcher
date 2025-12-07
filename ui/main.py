@@ -167,16 +167,27 @@ class mainWindow(QMainWindow):
         self.statusBar.setSizeGripEnabled(False)
         self.statusBar.showMessage("程序准备中")
         logging.info("[主窗口] 窗口初始化结束")
-        # 加载配置=====================================================
-        gui = readJson(os.path.join(config_path, "gui.json"))
         # 初始化更新通道================================================
         curr_channel = "release"
-        if gui.get("channel", "release") in self.channelActions.keys():
-            curr_channel = gui.get("channel", "release")
+        if config.read("gui.json", "update", "channel", "release") in self.channelActions.keys():
+            curr_channel = config.read("gui.json", "update", "channel", "release")
         # 初始化界面中的配置=============================================
         self.changeChannel(curr_channel)
         self.load_image(os.path.join(source_path, "logo.png"))
         self.devMenu.menuAction().setVisible(False)
+        # 初始化界面位置配置=============================================
+        self.init_pos()
+
+    def init_pos(self):
+        win_x = config.read("gui.json", "position", "x")
+        win_y = config.read("gui.json", "position", "y")
+        screen_w = self.window().screen().geometry().width()
+        screen_h = self.window().screen().geometry().height()
+        screens = len(QApplication.screens())
+        screen = config.read("gui.json", "screen", "geometry", "0x0,0")
+        if win_x and screen == f"{screen_w}x{screen_h}, {screens}":
+            self.move(win_x, win_y)
+        config.write("gui.json", "screen", "geometry", f"{screen_w}x{screen_h}, {screens}")
 
     # 加载主界面图片
     def load_image(self, image_path):
@@ -296,14 +307,12 @@ class mainWindow(QMainWindow):
     # 切换更新通道
     def changeChannel(self, channel):
         logging.debug(channel)
-        gui = readJson(os.path.join(config_path, "gui.json"))
         for key in self.channelActions:
             if key == channel:
                 self.channelActions[key].setIcon(self.checkIcon)
             else:
                 self.channelActions[key].setIcon(self.emptyIcon)
-        gui["channel"] = channel
-        writeJson(os.path.join(config_path, "gui.json"), gui)
+        config.write("gui.json", "update", "channel", channel)
 
     # 验证部分事件
     # 验证按钮按下，拉起验证窗口
@@ -424,7 +433,6 @@ class mainWindow(QMainWindow):
 
     # 更新检查回调
     def updateLog(self, version, log, channel):
-        gui = readJson(os.path.join(config_path, "gui.json"))
         if channel == "release":
             buttons = QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         else:
@@ -438,8 +446,7 @@ class mainWindow(QMainWindow):
         if box == QMessageBox.StandardButton.Yes:
             self.do_update(version)
         elif box == QMessageBox.StandardButton.Ignore:
-            gui["skip_version"] = version
-            writeJson(os.path.join(config_path, "gui.json"), gui)
+            config.write("gui.json", "update", "skip_version", version)
 
     # 本体更新直接拉起 Aria2 下载
     def do_update(self, version):
@@ -489,6 +496,9 @@ class mainWindow(QMainWindow):
             event.ignore()
             return
         self.statusBar.showMessage("正在结束程序")
+        pos = self.pos()
+        config.write("gui.json", "position", "x", pos.x())
+        config.write("gui.json", "position", "y", pos.y())
         logging.info("[主窗口] 准备结束程序")
         self.button_start.setEnabled(False)
         self.tray = None
