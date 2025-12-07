@@ -2,8 +2,6 @@ import shutil
 import subprocess
 
 from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from data.appInfo import *
 from lib.aria2c import Aria2cDownload, Aria2cManager
 from lib.core import *
 from lib.cos import COS
@@ -12,6 +10,7 @@ from lib.game import CheckGame, Clear
 
 from ui.download import DownloadWindow
 from ui.fileCheck import fileCheckWindow
+from ui.messageBoxies import *
 from ui.saveManager import SaveManagerWindow
 
 
@@ -118,6 +117,26 @@ class mainWindow(QMainWindow):
         self.updateAction.triggered.connect(self.buttonUpdate_onClick)
         self.trayMenu.addAction(self.updateAction)
 
+        # 设置菜单-开始==========================================
+        self.optionMenu = QMenu(self)
+        self.optionMenu.setTitle("选项")
+
+        self.clearMenu = QMenu(self)
+        self.clearMenu.setTitle("清除记住")
+
+        self.rememberAction = QAction(self)
+        self.rememberAction.setText("关闭选项")
+        self.rememberAction.triggered.connect(self.clear_remember)
+        self.clearMenu.addAction(self.rememberAction)
+
+        self.posAction = QAction(self)
+        self.posAction.setText("窗口位置")
+        self.posAction.triggered.connect(self.clear_pos)
+        self.clearMenu.addAction(self.posAction)
+
+        self.optionMenu.addMenu(self.clearMenu)
+        self.trayMenu.addMenu(self.optionMenu)
+        # 设置菜单-结束===========================================
         # 开发菜单-开始==========================================
         self.devMenu = QMenu(self)
         self.devMenu.setTitle("开发")
@@ -149,7 +168,7 @@ class mainWindow(QMainWindow):
 
         self.quitAction = QAction(self)
         self.quitAction.setText("退出")
-        self.quitAction.triggered.connect(lambda: self.close())
+        self.quitAction.triggered.connect(lambda: self.tray_close())
         self.trayMenu.addAction(self.quitAction)
 
         self.tray.setContextMenu(self.trayMenu)
@@ -188,6 +207,10 @@ class mainWindow(QMainWindow):
         if win_x and screen == f"{screen_w}x{screen_h}, {screens}":
             self.move(win_x, win_y)
         config.write("gui.json", "screen", "geometry", f"{screen_w}x{screen_h}, {screens}")
+
+    def clear_pos(self):
+        config.write("gui.json", "screen", "geometry")
+        self.send_notification("选项", "记住的窗口位置已清除，下次启动生效", 3000)
 
     # 加载主界面图片
     def load_image(self, image_path):
@@ -490,11 +513,32 @@ class mainWindow(QMainWindow):
             self._isUpdate = True
             self.close()
 
+    # 托盘退出
+    def tray_close(self):
+        self._isUpdate = True
+        self.close()
+
+    # 清除记住选项
+    def clear_remember(self):
+        config.write("gui.json", "exit", "remember")
+        self.send_notification("选项", "记住的关闭选项已清除", 3000)
+
     # 重写关闭事件
     def closeEvent(self, event):
-        if not self._isUpdate and not QMessageBox.warning(self, app_name, "确定要退出启动器吗？", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
-            event.ignore()
-            return
+        if not self._isUpdate:
+            _type = config.read("gui.json", "exit", "remember")
+            if not _type:
+                _type, remember = MessageBox_Exit(self).exec()
+                if remember:
+                    config.write("gui.json", "exit", "remember", _type)
+            if _type == MessageBox_ButtonType.No:
+                event.ignore()
+                return
+            elif _type == MessageBox_ButtonType.Hidden:
+                if not self.isHidden():
+                    self.show_tray_menu()
+                event.ignore()
+                return
         self.statusBar.showMessage("正在结束程序")
         pos = self.pos()
         config.write("gui.json", "position", "x", pos.x())
