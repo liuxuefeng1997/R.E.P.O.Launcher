@@ -43,6 +43,9 @@ class mainWindow(QMainWindow):
         self.resize(300, 224)
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
         self.setFixedSize(self.width(), self.height())
+        self.setWindowFlag(Qt.WindowType.WindowMinimizeButtonHint, False)
+        self.setWindowFlag(Qt.WindowType.WindowMaximizeButtonHint, False)
+        self.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
         # 初始化托盘图标================================================
         self.tray = QSystemTrayIcon(self)
         self.tray.setIcon(self.Icon)
