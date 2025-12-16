@@ -4,3 +4,4 @@
 
 ### 本项目中使用了以下开源项目
 - [aria2/aria2](https://github.com/aria2/aria2)
+- [tencentyun/cos-python-sdk-v5](https://github.com/tencentyun/cos-python-sdk-v5)
