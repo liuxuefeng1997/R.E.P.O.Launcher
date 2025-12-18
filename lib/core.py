@@ -30,7 +30,7 @@ def init_log():
     NOW_TIME_WITH_NO_SPACE = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
     if getattr(sys, 'frozen', False):
         if not os.path.exists(log_path):
-            os.mkdir(log_path)
+            os.makedirs(log_path)
         logging.basicConfig(
             level=logging.INFO,
             format='[%(asctime)s][%(levelname)s] %(message)s',
