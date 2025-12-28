@@ -582,6 +582,9 @@ class mainWindow(QMainWindow):
 
     # 开始游戏按钮事件
     def gameStart_onClick(self):
+        if not self.chkAction.isEnabled():
+            self.send_notification(app_name, "验证完整性未完成，请等待验证完成后再启动游戏")
+            return
         self.button_start.setEnabled(False)
         self.button_start.setText("准备启动游戏...")
         self.startAction.setEnabled(False)
