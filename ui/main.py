@@ -343,11 +343,14 @@ class mainWindow(QMainWindow):
     # 验证部分事件
     # 验证按钮按下，拉起验证窗口
     def buttonCheck_onClick(self):
+        self.chkAction.setEnabled(False)
         if not os.path.exists(os.path.join(run_path, f"{game_exe_name}.exe")):
             QMessageBox.warning(self, "警告", "请确保启动器已在游戏目录中，且目录中包含游戏主程序", QMessageBox.StandardButton.Yes)
+            self.chkAction.setEnabled(True)
             return
         if not network_check():
             QMessageBox.warning(self, "验证完整性", "网络错误，请检查网络设置", QMessageBox.StandardButton.Yes)
+            self.chkAction.setEnabled(True)
             return
         logging.info("[主窗口] 开始启动验证窗口")
         try:
@@ -389,6 +392,7 @@ class mainWindow(QMainWindow):
 
     # 验证清理结束
     def chkClrEnd(self, event):
+        self.chkAction.setEnabled(True)
         self.send_notification("验证模组内容完整性", "验证已完成")
         self.statusBar.showMessage("验证完整性完成", 3 * 1000)
 
