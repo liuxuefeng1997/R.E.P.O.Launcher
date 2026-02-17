@@ -28,17 +28,19 @@ config = Config(config_path)
 
 def init_log():
     NOW_TIME_WITH_NO_SPACE = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
+    config.write("gui.json", "log", "level_help", "10 = DEBUG, 20 = INFO, 30 = WARNING, 40 = ERROR, 50 = CRITICAL, 你可以在此分区添加level节点来设置日志级别，默认级别为 INFO")
+    logLevel = config.read("gui.json", "log", "level", logging.INFO)
     if getattr(sys, 'frozen', False):
         if not os.path.exists(log_path):
             os.makedirs(log_path)
         logging.basicConfig(
-            level=logging.INFO,
+            level=logLevel,
             format='[%(asctime)s][%(levelname)s] %(message)s',
             handlers=[logging.FileHandler(filename=os.path.join(log_path, f'log_{NOW_TIME_WITH_NO_SPACE}.txt'), mode='w', encoding='utf-8')]
         )
     else:
         logging.basicConfig(
-            level=logging.DEBUG,
+            level=logLevel,
             format='[%(asctime)s][%(levelname)s] %(message)s'
         )
 

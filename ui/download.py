@@ -64,7 +64,7 @@ class DownloadWindow(QDialog):
         self.versions[curr_key] = self.dicts.get(curr_key)
         writeJson(os.path.join(run_path, "version.json"), self.versions)
         comp = progress.get('complete')
-        c = int(comp) if comp else 100
+        c = int(comp) if comp is not None else 100
         self.progressBarA.setValue(c)
 
     def onModComplete(self, e, t, v):
