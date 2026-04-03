@@ -53,7 +53,7 @@ class SaveManagerWindow(QDialog):
     def listWidget_onClicked(self):
         item = self.listWidget.currentItem()
         current_save = f'{item.statusTip()}'
-        data = Es3Editer(os.path.join(game_save_path, rf"{current_save}\{current_save}.es3")).read_es3()
+        data = Es3Editer(os.path.join(game_save_path, rf"{current_save}\{current_save}.es3"), save_pwd).read_es3()
         run_stats = data.get("dictionaryOfDictionaries", {}).get("value", {}).get("runStats", {})
         level = run_stats.get("level", 0)
         money = run_stats.get("currency", 0)
@@ -67,7 +67,7 @@ class SaveManagerWindow(QDialog):
         self.listWidget.clear()
         save_list = os.listdir(game_save_path)
         for save in save_list:
-            data = Es3Editer(os.path.join(game_save_path, rf"{save}\{save}.es3")).read_es3()
+            data = Es3Editer(os.path.join(game_save_path, rf"{save}\{save}.es3"), save_pwd).read_es3()
             save_name = data.get("teamName", {}).get("value", "R.E.P.O.")
             save_time = data.get("dateAndTime", {}).get("value", "1970-01-01")
             logging.info(f"[备份还原模块] 已找到存档 {save_name} {save_time}")

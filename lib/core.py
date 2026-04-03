@@ -23,6 +23,7 @@ localLow_path = os.path.expandvars(r"%localappdata%Low")
 game_save_path = os.path.join(localLow_path, r"semiwork\Repo\saves")
 aria2_path = os.path.join(plugin_path, "aria2c.exe")
 self_uuid = hashlib.md5(f"{game_name}{game_appId}{patch_type}{run_path}".encode("utf8")).hexdigest()
+save_pwd = "Why would you want to cheat?... :o It's no fun. :') :'D"
 config = Config(config_path)
 
 

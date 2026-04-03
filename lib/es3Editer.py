@@ -3,14 +3,14 @@ from lib.core import *
 
 
 class Es3Editer:
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str, password: str):
         """
         ES3 存档编辑器
         :param file_path: 存档文件路径
         """
         super(Es3Editer, self).__init__()
         self.file_path = file_path
-        self.decrypting_password = "Why would you want to cheat?... :o It's no fun. :') :'D"
+        self.decrypting_password = password
 
     def read_es3_obj(self) -> ES3 | None:
         """
