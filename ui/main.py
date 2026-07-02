@@ -533,8 +533,8 @@ class mainWindow(QMainWindow):
     # 重写关闭事件
     def closeEvent(self, event):
         if not self._isUpdate:
-            _type = config.read("gui.json", "exit", "remember")
-            if not _type:
+            _type = config.read("gui.json", "exit", "remember", 999)
+            if _type == 999:
                 _type, remember = MessageBox_Exit(self).exec()
                 if remember:
                     config.write("gui.json", "exit", "remember", _type)
