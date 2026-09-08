@@ -417,7 +417,7 @@ class mainWindow(QMainWindow):
     def setup_aria2c(self):
         # 创建aria2c管理器
         self.aria2c_manager = Aria2cManager(
-            rpc_port=6800
+            rpc_port=6898
         )
 
         # 连接信号

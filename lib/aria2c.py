@@ -9,7 +9,7 @@ class Aria2cDownload(QThread):
     isStart = pyqtSignal(bool)
     add_status = pyqtSignal(str)
 
-    def __init__(self, uri, keys, _dir=run_path, rpc_host='localhost', rpc_port=6800, rpc_secret=None, isUpdate=False):
+    def __init__(self, uri, keys, _dir=run_path, rpc_host='localhost', rpc_port=6898, rpc_secret=None, isUpdate=False):
         super(Aria2cDownload, self).__init__()
 
         self.curr_key = keys if isUpdate else ""

@@ -21,7 +21,7 @@ plugin_path = resource_path("plugins")
 source_path = resource_path("sources")
 localLow_path = os.path.expandvars(r"%localappdata%Low")
 game_save_path = os.path.join(localLow_path, r"semiwork\Repo\saves")
-aria2_path = os.path.join(plugin_path, "aria2c.exe")
+aria2_path = os.path.join(plugin_path, "repo_aria2c.exe")
 self_uuid = hashlib.md5(f"{game_name}{game_appId}{patch_type}{run_path}".encode("utf8")).hexdigest()
 save_pwd = "Why would you want to cheat?... :o It's no fun. :') :'D"
 config = Config(config_path)
@@ -210,7 +210,7 @@ class CleanupThread(QThread):
             logging.info("[Core] 正在关闭aria2c...")
             if self.parent.aria2c_manager:
                 self.parent.aria2c_manager.stop_aria2c()
-            pid = checkRun("aria2c.exe")
+            pid = checkRun("repo_aria2c.exe")
             if pid:
                 psutil.Process(pid).kill()
             logging.info("[Core] 程序已结束")
