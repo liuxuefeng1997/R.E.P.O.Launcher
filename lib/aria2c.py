@@ -460,11 +460,6 @@ class Aria2cManager(QThread):
             if self.aria2c_process and self.aria2c_process.poll() is None:
                 return True
 
-            # 检查系统中所有的aria2c进程
-            for proc in psutil.process_iter(['name']):
-                if proc.info['name'] and 'aria2c' in proc.info['name'].lower():
-                    return True
-
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
 
