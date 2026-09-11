@@ -492,7 +492,7 @@ class mainWindow(QMainWindow):
 
     # 本体更新进度回调
     def onUpdate(self, progress: dict):
-        self.statusBar.showMessage(f"下载：{progress.get('complete'): .2f} %")
+        self.statusBar.showMessage(f"下载：{progress.get('complete', 0): .2f} %")
 
     # 本体更新完成回调
     def onUpdateComplete(self, e, t, k: str):
