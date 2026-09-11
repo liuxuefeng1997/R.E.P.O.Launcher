@@ -53,7 +53,7 @@ class fileCheckWindow(QDialog):
         logging.debug(data)
         dir_name = data.get("dir")
         file_name = data.get("file")
-        complete = data.get("complete")
+        complete = data.get("complete", 0)
         find = data.get("find")
         stat = '' if find else '：失败'
         self.label.setText(f"{'正在验证'} {dir_name}{file_name}{stat}")
@@ -66,7 +66,7 @@ class fileCheckWindow(QDialog):
     # }
     def allfileProgress(self, data: dict):
         logging.debug(data)
-        complete = data.get("complete")
+        complete = data.get("complete", 0)
         self.progressBarB.setValue(complete)
 
     # 校验结束回调 restore_list=需要恢复的文件列表，dicts=完整文件清单
