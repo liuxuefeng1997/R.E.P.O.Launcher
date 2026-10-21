@@ -61,7 +61,7 @@ if __name__ == '__main__':
                     if os.path.exists(backup_exe):
                         os.remove(backup_exe)
                     print(f"[{app_name} | 更新] 更新完成，准备重启")
-                    for s in reversed(range(1, 60)):
+                    for s in reversed(range(1, 3)):
                         print(f"[{app_name} | 更新] 准备重启 {s}")
                         time.sleep(1)
                     os.startfile(target_exe)

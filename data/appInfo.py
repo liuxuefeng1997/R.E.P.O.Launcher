@@ -2,6 +2,6 @@ game_name = "R.E.P.O."
 game_exe_name = "REPO"
 game_appId = 3241660
 patch_type = "启动器"
-ver = "v2026.10.22.0110.1"
+ver = "v2026.10.22.0110.2"
 
 app_name = f"{game_name}{patch_type}"
