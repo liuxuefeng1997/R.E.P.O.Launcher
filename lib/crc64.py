@@ -10,6 +10,7 @@ class CrcCheck(QThread):
 
     def __init__(self, parent=None):
         super(CrcCheck, self).__init__(parent=parent)
+        self._is_running = True
         self.file_list = COS(TencentCloud.Update.mod_bukkit, TencentCloud.Update.mod_region).get_file_list()
         self.dicts = {}
         # 去除文件夹，因为不需要下载
@@ -23,6 +24,8 @@ class CrcCheck(QThread):
         file_maxsum = len(self.dicts)
         restore_list = []
         for key in self.dicts.keys():
+            if not self._is_running:
+                return
             file_sum += 1
             chk_complete = int(file_sum / file_maxsum * 100)
             cos_crc64 = COS(TencentCloud.Update.mod_bukkit, TencentCloud.Update.mod_region).get_file_metadata(key).get("x-cos-hash-crc64ecma", False)
@@ -40,6 +43,10 @@ class CrcCheck(QThread):
                     "complete": chk_complete
                 })
         self.sendCompleteList(restore_list, self.dicts)
+
+    def stop_check(self):
+        """请求停止校验（协作式，避免硬杀线程）"""
+        self._is_running = False
 
     def sendProgressAll(self, data: dict):
         self.progress_all.emit(data)
@@ -92,7 +99,7 @@ class CrcCheck(QThread):
 
         try:
             with open(file_path, 'rb') as f:
-                while True:
+                while self._is_running:
                     chunk = f.read(chunk_size)
                     if not chunk:
                         break

@@ -84,6 +84,9 @@ class fileCheckWindow(QDialog):
         self.close()
 
     def closeEvent(self, e):
-        if self.chk.isRunning():
-            self.chk.terminate()
+        if self.chk is not None and self.chk.isRunning():
+            self.chk.stop_check()
+            if not self.chk.wait(3000):
+                self.chk.terminate()
+                self.chk.wait(1000)
         e.accept()
