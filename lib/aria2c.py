@@ -8,6 +8,7 @@ class Aria2cDownload(QThread):
     complete = pyqtSignal(bool, float, str)
     isStart = pyqtSignal(bool)
     add_status = pyqtSignal(str)
+    file_complete = pyqtSignal(str, bool)  # key, 是否成功
 
     def __init__(self, uri, keys, _dir=run_path, rpc_host='localhost', rpc_port=6898, rpc_secret=None, isUpdate=False):
         super(Aria2cDownload, self).__init__()
@@ -236,11 +237,13 @@ class Aria2cDownload(QThread):
         if status['status'] == 'complete' and os.path.exists(output_file):
             logging.info(f"[Aria2] 下载完成: {key}")
             self.completed_downloads[key] = True
+            self.file_complete.emit(key, True)
         else:
             error_code = status.get('errorCode', '未知错误')
             error_message = status.get('errorMessage', '下载失败')
             logging.error(f"[Aria2] 下载失败 {key}: {error_code} - {error_message}")
             self.completed_downloads[key] = False
+            self.file_complete.emit(key, False)
 
     def stop_download(self):
         """停止所有下载任务"""

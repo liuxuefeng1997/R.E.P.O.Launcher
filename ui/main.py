@@ -385,6 +385,11 @@ class mainWindow(QMainWindow):
 
     # 验证下载结束回调 拉起清理，以清理空文件夹等
     def chkDownEnd(self, event, dicts):
+        if not event:
+            self.chkAction.setEnabled(True)
+            self.statusBar.showMessage("修复失败，请重试", 5000)
+            self.send_notification("验证模组内容完整性", "修复失败，请重试")
+            return
         self.clear = Clear(dicts)
         self.clear.c_ok.connect(self.chkClrEnd)
         self.clear.c_progress.connect(self.clearProgress)
@@ -650,6 +655,15 @@ class mainWindow(QMainWindow):
 
     # Mod 更新下载结束回调，由下载窗口拉起
     def downloadEnd(self, event, dicts):
+        if not event:
+            # 下载失败：不进入清理/启动流程，恢复按钮以便重试
+            self.button_start.setEnabled(True)
+            self.button_start.setText("启动游戏")
+            self.startAction.setEnabled(True)
+            self.startAction.setText("启动游戏")
+            self.statusBar.showMessage("更新失败，请重试", 5000)
+            self.send_notification("更新", "更新失败，请重试")
+            return
         # 清理
         self.clear = Clear(dicts)
         self.clear.c_ok.connect(self.clearEnd)
