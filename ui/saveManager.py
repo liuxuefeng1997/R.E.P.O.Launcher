@@ -52,6 +52,8 @@ class SaveManagerWindow(QDialog):
 
     def listWidget_onClicked(self):
         item = self.listWidget.currentItem()
+        if item is None:
+            return
         current_save = f'{item.statusTip()}'
         data = Es3Editer(os.path.join(game_save_path, rf"{current_save}\{current_save}.es3"), save_pwd).read_es3()
         run_stats = data.get("dictionaryOfDictionaries", {}).get("value", {}).get("runStats", {})
@@ -80,9 +82,14 @@ class SaveManagerWindow(QDialog):
             self.listWidget_onClicked()
             self.save_delete.setEnabled(True)
             self.save_backup.setEnabled(True)
+        else:
+            self.save_delete.setEnabled(False)
+            self.save_backup.setEnabled(False)
 
     def buttonDelete(self):
         item = self.listWidget.currentItem()
+        if item is None:
+            return
         current_save = f'{item.statusTip()}'
         if QMessageBox.warning(self, "警告", "删除后不可恢复，确定要删除吗？", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
             if QMessageBox.warning(self, "警告", "真的想好了吗？", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No) == QMessageBox.StandardButton.Yes:
@@ -92,6 +99,8 @@ class SaveManagerWindow(QDialog):
 
     def buttonBackup(self):
         item = self.listWidget.currentItem()
+        if item is None:
+            return
         current_save = f'{item.statusTip()}'
         if not os.path.exists(backup_path):
             os.makedirs(backup_path)
